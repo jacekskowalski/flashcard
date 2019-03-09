@@ -22,6 +22,10 @@ public class Appuser implements Serializable {
     public Appuser() {
     }
 
+    public Appuser(@Size(min = 5) @Email String email) {
+        this.email = email;
+    }
+
     public Appuser(@Email String email, @Size(min = 5, max = 20, message = "minimum 5 and maximum 20") String pswd) {
         this.email = email;
         this.pswd = pswd;

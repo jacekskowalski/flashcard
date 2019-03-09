@@ -1,6 +1,7 @@
 package com.project.flashcards.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,4 +12,6 @@ public interface AppuserRepository extends JpaRepository<Appuser,Long> {
     boolean existsByEmail(String email);
     boolean existsByEmailAndAndPswd(String email, String pswd);
     boolean existsById(Long id);
+
+    Appuser findAppuserByEmail(String email);
 }

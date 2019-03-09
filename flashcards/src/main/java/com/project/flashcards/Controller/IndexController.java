@@ -3,18 +3,23 @@ package com.project.flashcards.Controller;
 import com.project.flashcards.Repository.Appuser;
 import com.project.flashcards.Repository.AppuserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.sendgrid.*;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin
 @RestController
 public class IndexController {
+
+@Value("${spring.sendgrid.api-key}")
+private String apiKey;
     @Autowired
     private AppuserRepository appuserRepository;
 
@@ -24,6 +29,10 @@ public class IndexController {
 
     public void setAppuserRepository(AppuserRepository appuserRepository) {
         this.appuserRepository = appuserRepository;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
     @PostMapping("/login")
@@ -45,7 +54,27 @@ if(id ==0 || id == null){
 }
     }
 
+@PostMapping("/remember")
+public void remember(@RequestBody Appuser appuser) throws IOException{
+Appuser getpswd= appuserRepository.findAppuserByEmail(appuser.getEmail());
+   Email from = new Email("flashcards@no-reply.com");
+    String subject = "Flashcards";
+    Email to = new Email(getpswd.getEmail());
+    Content content = new Content("text/plain", "Your forgotten password " +getpswd.getPswd());
+    Mail mail = new Mail(from, subject, to, content);
+    SendGrid sg = new SendGrid(apiKey);
+    Request request = new Request();
+    try {
+        request.setMethod(Method.POST);
+        request.setEndpoint("mail/send");
+        request.setBody(mail.build());
+        Response response = sg.api(request);
 
+    } catch (IOException ex) {
+        throw ex;
+    }
+
+}
     @PostMapping("/signup")
     public Appuser signup(@RequestBody Appuser user){
         if(appuserRepository.existsByEmail(user.getEmail()))
