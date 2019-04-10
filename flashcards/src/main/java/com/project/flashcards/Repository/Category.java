@@ -2,23 +2,30 @@ package com.project.flashcards.Repository;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 public class Category implements Serializable {
     private static final long serialVersionUID = 3612211937273401253L;
     @Id
-    private int id;
+    private Long id;
     private String name;
-
+@OneToMany(mappedBy = "category_id")
+private List<Flashcards> flashcards;
     public Category() {
     }
 
-    public int getId() {
+    public Category(String name) {
+        this.name = name;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -28,5 +35,13 @@ public class Category implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Flashcards> getFlashcards() {
+        return flashcards;
+    }
+
+    public void setFlashcards(List<Flashcards> flashcards) {
+        this.flashcards = flashcards;
     }
 }
