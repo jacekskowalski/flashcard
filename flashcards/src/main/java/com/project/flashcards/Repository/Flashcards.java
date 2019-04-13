@@ -23,7 +23,10 @@ private Category category_id;
 private Difficulty difficulty_id;
 @OneToMany(mappedBy = "flashcards")
     List<Flashcard_points> flashcards;
-    public Flashcards() {
+@JsonIgnore
+@OneToMany(mappedBy = "flashcards")
+List<FavouriteFlashcards> favouriteFlashcards;
+     public Flashcards() {
     }
 
     public String getQuestion() {
@@ -83,6 +86,14 @@ private Difficulty difficulty_id;
 
     public void setFlashcards(List<Flashcard_points> flashcards) {
         this.flashcards = flashcards;
+    }
+
+    public List<FavouriteFlashcards> getFavouriteFlashcards() {
+        return favouriteFlashcards;
+    }
+
+    public void setFavouriteFlashcards(List<FavouriteFlashcards> favouriteFlashcards) {
+        this.favouriteFlashcards = favouriteFlashcards;
     }
 
     @Override

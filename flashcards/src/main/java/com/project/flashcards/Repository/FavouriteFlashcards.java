@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@CrossOrigin
+@Table(name = "favouriteflashcards")
 public class FavouriteFlashcards implements Serializable {
     private static final long serialVersionUID = -4019906377994482463L;
     @Id

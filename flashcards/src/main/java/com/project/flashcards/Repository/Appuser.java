@@ -30,7 +30,9 @@ private  List<Statistics> statisticsList;
     @JsonIgnore
  @OneToMany(mappedBy = "appuser")
 private Set<Flashcard_points> flashcardPoints;
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "appuser")
+    private List<FavouriteFlashcards> favouriteFlashcards;
     public Appuser() {
     }
 
@@ -100,5 +102,13 @@ private Set<Flashcard_points> flashcardPoints;
 
     public void setFlashcardPoints(Set<Flashcard_points> flashcardPoints) {
         this.flashcardPoints = flashcardPoints;
+    }
+
+    public List<FavouriteFlashcards> getFavouriteFlashcards() {
+        return favouriteFlashcards;
+    }
+
+    public void setFavouriteFlashcards(List<FavouriteFlashcards> favouriteFlashcards) {
+        this.favouriteFlashcards = favouriteFlashcards;
     }
 }

@@ -9,6 +9,7 @@ import com.project.flashcards.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,6 +28,8 @@ public class UserController {
     private  DifficultyRepository difficultyRepository;
     @Autowired
     private  CategoryRepository categoryRepository;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 @Autowired
 private FavouriteFlashcardsRepository favouriteFlashcardsRepository;
 
@@ -70,7 +73,7 @@ private FavouriteFlashcardsRepository favouriteFlashcardsRepository;
             Appuser newappuser = getappuser.get();
             newappuser.setName_surname(appuser.getName_surname());
             newappuser.setEmail(appuser.getEmail());
-            newappuser.setPswd(appuser.getPswd());
+            newappuser.setPswd(bCryptPasswordEncoder.encode(appuser.getPswd()));
             appuserRepository.save(newappuser);
             return new ResponseEntity<>("Account updated", HttpStatus.OK);
         }
@@ -167,22 +170,32 @@ int result;
 
 
     @PostMapping("/favouriteflashcard")
-    public void saveFlashcard(@RequestBody StatisticsHelperComponent statisticsHelperComponent){
+    public ResponseEntity<?> saveFlashcard(@RequestBody StatisticsHelperComponent statisticsHelperComponent){
         Optional<Appuser> getappuser=  appuserRepository.findById(statisticsHelperComponent.getApuserId());
         Appuser newappuser = getappuser.get();
         Optional<Flashcards> flash = flashcards.findById(statisticsHelperComponent.getFlashcardsId());
         Flashcards fl = flash.get();
         FavouriteFlashcards favouriteFlashcards =new FavouriteFlashcards(newappuser, fl);
-                 favouriteFlashcardsRepository.save(favouriteFlashcards);
+        if(Objects.nonNull(favouriteFlashcardsRepository.existsByAppuserIdAnAndFlashcardsId(newappuser.getId(), fl.getId())))
+            return new ResponseEntity<>("Content  exist", HttpStatus.UNPROCESSABLE_ENTITY);
+         else {
+            favouriteFlashcardsRepository.save(favouriteFlashcards);
+            return new ResponseEntity<>("Flashcard added", HttpStatus.OK);
+        }
 
     }
 @DeleteMapping("/favouriteflashcard")
-    public void deleteFlashcard(@RequestBody StatisticsHelperComponent statisticsHelperComponent){
+    public ResponseEntity<?> deleteFlashcard(@RequestBody StatisticsHelperComponent statisticsHelperComponent){
     Optional<Appuser> getappuser=  appuserRepository.findById(statisticsHelperComponent.getApuserId());
     Appuser newappuser = getappuser.get();
     Optional<Flashcards> flash = flashcards.findById(statisticsHelperComponent.getFlashcardsId());
     Flashcards fl = flash.get();
-    favouriteFlashcardsRepository.deleteFlashcard(newappuser.getId(), fl.getId());
+    if(Objects.isNull(favouriteFlashcardsRepository.existsByAppuserIdAnAndFlashcardsId(newappuser.getId(), fl.getId())) ||
+    favouriteFlashcardsRepository.existsByAppuserIdAnAndFlashcardsId(newappuser.getId(), fl.getId()).isEmpty()){
+        return new ResponseEntity<>("Content not exist", HttpStatus.NOT_FOUND);
+    }
+    else{ favouriteFlashcardsRepository.deleteFlashcard(newappuser.getId(), fl.getId());
+    return new ResponseEntity<>("Flashcard deleted", HttpStatus.OK);}
 }
 @GetMapping("/favouriteflashcard/{id}")
     public List<FavouriteFlashcards> getAllFlashcards(@PathVariable("id") Long id){
