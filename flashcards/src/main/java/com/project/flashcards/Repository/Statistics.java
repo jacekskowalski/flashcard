@@ -28,6 +28,7 @@ private Difficulty difficulty;
     public Statistics() {
     }
 
+
     public Statistics(Appuser user_id, Category category, Difficulty difficulty) {
         this.user_id = user_id;
         this.category = category;
@@ -95,5 +96,17 @@ private Difficulty difficulty;
 
     public void setSum(int sum) {
         this.sum = sum;
+    }
+
+    @Override
+    public String toString() {
+        return "Statistics{" +
+                "id=" + id +
+                ", user_id=" + user_id +
+                ", sum=" + sum +
+                ", points=" + points +
+                ", category=" + category +
+                ", difficulty=" + difficulty +
+                '}';
     }
 }

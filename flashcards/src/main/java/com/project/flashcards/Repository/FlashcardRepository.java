@@ -18,5 +18,5 @@ public interface FlashcardRepository extends JpaRepository<Flashcards, Long> {
 Long getCategoryId(Long id);
     @Query("SELECT f.difficulty_id.id FROM Flashcards  f WHERE f.id = ?1")
     Long getDifficultyId(Long id);
-
+    boolean existsById(Long id);
 }

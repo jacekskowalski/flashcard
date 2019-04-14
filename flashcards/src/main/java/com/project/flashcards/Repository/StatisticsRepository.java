@@ -12,8 +12,8 @@ import java.util.Optional;
 
 @Repository
 public interface StatisticsRepository extends JpaRepository<Statistics, Long> {
-    @Query(value="SELECT a.name_surname,(SELECT st.points FROM Statistics st JOIN Category ca ON st.category_id = ca.id JOIN Difficulty di ON st.difficulty_id = di.id AND st.user_id = ?1) as sum,(SELECT  count(*) FROM Flashcards WHERE Flashcards.category_id = c.id AND Flashcards.difficulty_id = d.id) as total, c.name as category, d.name as difficulty FROM Statistics s JOIN Appuser a ON s.user_id = a.id JOIN Category c ON s.category_id = c.id JOIN Difficulty d ON s.difficulty_id = d.id AND s.user_id = ?1",nativeQuery = true)
-    List<Statistics> findAllByUser(Long id);
+    @Query(value="SELECT a.name_surname, c.name as category,d.name as difficulty,(SELECT st.points FROM Statistics st JOIN Category ca ON st.category_id = ca.id JOIN Difficulty di ON st.difficulty_id = di.id AND st.user_id = ?1),(SELECT  count(*) FROM Flashcards WHERE Flashcards.category_id = c.id AND Flashcards.difficulty_id = d.id) FROM Statistics s,Appuser a, Category c, Difficulty d where s.user_id = a.id and s.category_id = c.id and s.difficulty_id = d.id AND s.user_id = ?1",nativeQuery = true)
+    List<Object> findAllByUser(Long id);
 
     @Transactional
     @Modifying

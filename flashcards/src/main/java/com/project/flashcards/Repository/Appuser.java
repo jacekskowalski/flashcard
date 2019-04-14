@@ -111,4 +111,11 @@ private Set<Flashcard_points> flashcardPoints;
     public void setFavouriteFlashcards(List<FavouriteFlashcards> favouriteFlashcards) {
         this.favouriteFlashcards = favouriteFlashcards;
     }
+
+    @Override
+    public String toString() {
+        return "Appuser{" +
+                "name_surname='" + name_surname + '\'' +
+                '}';
+    }
 }

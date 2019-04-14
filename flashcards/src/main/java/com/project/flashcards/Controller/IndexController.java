@@ -1,17 +1,21 @@
 package com.project.flashcards.Controller;
 
+import com.google.gson.Gson;
 import com.project.flashcards.Repository.Appuser;
 import com.project.flashcards.Repository.AppuserRepository;
 import com.project.flashcards.Repository.FlashcardRepository;
 import com.sendgrid.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Objects;
 
 @CrossOrigin
@@ -29,6 +33,7 @@ private String apiKey;
     public AppuserRepository getAppuserRepository() {
         return appuserRepository;
     }
+Gson gson =new Gson();
 
     public void setAppuserRepository(AppuserRepository appuserRepository) {
         this.appuserRepository = appuserRepository;
@@ -53,12 +58,13 @@ public  ResponseEntity<?> badrequest(){
 
       @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Appuser appuser) {
-          String getPswd = appuserRepository.findPswd(appuser.getEmail());
-
+            String getPswd = appuserRepository.findPswd(appuser.getEmail());
+          HttpHeaders responseHeaders = new HttpHeaders();
+          responseHeaders.setContentType(MediaType.APPLICATION_JSON);
           if (!appuserRepository.existsByEmail(appuser.getEmail())
                   || bCryptPasswordEncoder.matches(bCryptPasswordEncoder.encode(appuser.getPswd()),
                   getPswd)) {
-              return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+              return new ResponseEntity<>(gson.toJson("Wrong data"),responseHeaders,HttpStatus.UNPROCESSABLE_ENTITY);
           } else {
               return new ResponseEntity<>(appuserRepository.findAppuserByEmail(appuser.getEmail()), HttpStatus.OK);
           }
@@ -68,8 +74,10 @@ public  ResponseEntity<?> badrequest(){
 @PostMapping("/remember")
 public ResponseEntity<?> remember(@RequestBody Appuser appuser) throws IOException{
 Appuser getpswd= appuserRepository.findAppuserByEmail(appuser.getEmail());
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
     if(Objects.isNull(getpswd)){
-        return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(gson.toJson("Account not found"), responseHeaders,HttpStatus.NOT_FOUND);
     }else {
         Email from = new Email("flashcards@no-reply.com");
         String subject = "Flashcards";
@@ -89,34 +97,38 @@ Appuser getpswd= appuserRepository.findAppuserByEmail(appuser.getEmail());
             throw ex;
         }
     }
-    return new ResponseEntity<>("Email sent", HttpStatus.OK);
+    return new ResponseEntity<>(gson.toJson("Email sent"),responseHeaders, HttpStatus.OK);
 }
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody Appuser user){
-        if(appuserRepository.existsByEmail(user.getEmail()))
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+              if(appuserRepository.existsByEmail(user.getEmail()))
 
-            return new ResponseEntity<>( "Account exist", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(gson.toJson("Account exists"),responseHeaders, HttpStatus.FORBIDDEN);
         else {
             Appuser appuser =new Appuser();
             appuser.setName_surname(user.getName_surname());
             appuser.setEmail(user.getEmail());
             appuser.setPswd(bCryptPasswordEncoder.encode(user.getPswd()));
             appuserRepository.save(appuser);
-            return new ResponseEntity<>("Account created", HttpStatus.OK);
+            return new ResponseEntity<>(gson.toJson("Account created"),responseHeaders, HttpStatus.OK);
         }
            }
 
 @PutMapping("/reset")
 public ResponseEntity<?> changePassword(@RequestBody Appuser appuser){
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
         if(Objects.isNull(appuser))
-            return new ResponseEntity<>("No content", HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(gson.toJson("No content"),responseHeaders, HttpStatus.NO_CONTENT);
 
          else if(! appuserRepository.existsByEmail(appuser.getEmail())){
-            return new ResponseEntity<>( "Account not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>( gson.toJson("Account not exist"),responseHeaders, HttpStatus.NOT_FOUND);
         }else{
              String newPassword= bCryptPasswordEncoder.encode(appuser.getPswd());
              appuserRepository.changeUserPassword(appuser.getEmail(),newPassword);
-             return  new ResponseEntity<>( "Password changed", HttpStatus.OK);
+             return  new ResponseEntity<>( gson.toJson("Password changed"),responseHeaders, HttpStatus.OK);
 }
 }
 
