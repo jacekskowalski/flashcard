@@ -12,12 +12,15 @@ import java.util.List;
 @Repository
 @CrossOrigin
 public interface FavouriteFlashcardsRepository extends JpaRepository<FavouriteFlashcards, Long> {
-   @Query("SELECT f.flashcards FROM FavouriteFlashcards f WHERE f.appuser.id = ?1")
+   @Query("SELECT f.flashcards.id,f.flashcards.question, f.flashcards.answer FROM FavouriteFlashcards f WHERE f.appuser.id = ?1")
    List<FavouriteFlashcards> getAllFlashcards(Long id);
-    @Query("SELECT f.flashcards FROM FavouriteFlashcards f WHERE f.appuser.id =?1 AND f.flashcards.id =?2")
+    @Query(value = "SELECT COALESCE(COUNT(*),0) FROM FavouriteFlashcards f WHERE f.appuser_id = ?1",nativeQuery = true)
+    Integer sumAllFlashcards(Long id);
+    @Query("SELECT f FROM FavouriteFlashcards f WHERE f.appuser.id =?1 AND f.flashcards.id =?2")
     List<FavouriteFlashcards> existsByAppuserIdAnAndFlashcardsId(Long userId, Long flashcardId);
     @Transactional
     @Modifying
     @Query("DELETE FROM FavouriteFlashcards ff WHERE ff.appuser.id =?1 AND ff.flashcards.id =?2")
    void deleteFlashcard(Long userId, Long flashcardId);
+
 }

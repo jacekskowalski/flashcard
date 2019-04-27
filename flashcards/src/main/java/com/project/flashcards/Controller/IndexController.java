@@ -1,9 +1,7 @@
 package com.project.flashcards.Controller;
 
 import com.google.gson.Gson;
-import com.project.flashcards.Repository.Appuser;
-import com.project.flashcards.Repository.AppuserRepository;
-import com.project.flashcards.Repository.FlashcardRepository;
+import com.project.flashcards.Repository.*;
 import com.sendgrid.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +28,8 @@ private String apiKey;
     private FlashcardRepository flashcards;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+@Autowired
+private TimeStatsRepository timeStatsRepository;
     public AppuserRepository getAppuserRepository() {
         return appuserRepository;
     }
@@ -51,12 +51,15 @@ Gson gson =new Gson();
         this.flashcards = flashcards;
     }
 
-@GetMapping("/appusers")
-public  ResponseEntity<?> badrequest(){
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-}
+    public TimeStatsRepository getTimeStatsRepository() {
+        return timeStatsRepository;
+    }
 
-      @PostMapping("/login")
+    public void setTimeStatsRepository(TimeStatsRepository timeStatsRepository) {
+        this.timeStatsRepository = timeStatsRepository;
+    }
+
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Appuser appuser) {
             String getPswd = appuserRepository.findPswd(appuser.getEmail());
           HttpHeaders responseHeaders = new HttpHeaders();
@@ -66,7 +69,8 @@ public  ResponseEntity<?> badrequest(){
                   getPswd)) {
               return new ResponseEntity<>(gson.toJson("Wrong data"),responseHeaders,HttpStatus.UNPROCESSABLE_ENTITY);
           } else {
-              return new ResponseEntity<>(appuserRepository.findAppuserByEmail(appuser.getEmail()), HttpStatus.OK);
+           timeStatsRepository.loginCounter(appuser.getEmail());
+               return new ResponseEntity<>(appuserRepository.findAppuserByEmail(appuser.getEmail()), HttpStatus.OK);
           }
     }
 
@@ -112,6 +116,8 @@ Appuser getpswd= appuserRepository.findAppuserByEmail(appuser.getEmail());
             appuser.setEmail(user.getEmail());
             appuser.setPswd(bCryptPasswordEncoder.encode(user.getPswd()));
             appuserRepository.save(appuser);
+                  TimeStats timeStats=new TimeStats(0,0.0,appuser);
+                  timeStatsRepository.save(timeStats);
             return new ResponseEntity<>(gson.toJson("Account created"),responseHeaders, HttpStatus.OK);
         }
            }

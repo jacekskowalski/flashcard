@@ -12,30 +12,25 @@ import java.util.Optional;
 
 @Repository
 public interface StatisticsRepository extends JpaRepository<Statistics, Long> {
-    @Query(value="SELECT a.name_surname, c.name as category,d.name as difficulty,(SELECT st.points FROM Statistics st JOIN Category ca ON st.category_id = ca.id JOIN Difficulty di ON st.difficulty_id = di.id AND st.user_id = ?1),(SELECT  count(*) FROM Flashcards WHERE Flashcards.category_id = c.id AND Flashcards.difficulty_id = d.id) FROM Statistics s,Appuser a, Category c, Difficulty d where s.user_id = a.id and s.category_id = c.id and s.difficulty_id = d.id AND s.user_id = ?1",nativeQuery = true)
+    @Query(value = "SELECT c.name as category,d.name as difficulty, s.points,(SELECT  count(*) FROM Flashcards WHERE Flashcards.category_id = c.id AND Flashcards.difficulty_id = d.id) FROM Statistics s,Appuser a, Category c, Difficulty d where s.user_id = a.id and s.category_id = c.id and s.difficulty_id = d.id AND s.user_id = ?1", nativeQuery = true)
     List<Object> findAllByUser(Long id);
-
     @Transactional
     @Modifying
     @Query("DELETE FROM Statistics s WHERE s.user_id.id = ?1")
     void deleteStatisticsByUser_id(Long id);
-
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM Flashcard_points fp WHERE fp.appuser.id = ?1")
-    void deleteFlashcardPointsByUser_id(Long id);
-
-    @Transactional
-    @Modifying
-    @Query("UPDATE Flashcard_points flash SET flash.point = 1 WHERE " +
-            "flash.appuser.id = ?1 AND flash.flashcards.id = ?2")
-    void updateFlashcardPoints(Long appuser, Long flashcards);
-
- @Query ("SELECT SUM(fp.point) FROM Flashcard_points fp WHERE fp.appuser.id = ?1 AND (SELECT f.category_id.id FROM Flashcards f WHERE f.id = ?2) = ?3 AND (SELECT f.difficulty_id.id FROM Flashcards f WHERE f.id = ?2) = ?4")
-Integer calculateUserPoints(Long appuser, Long flashcardId, Long catId, Long diffId);
-
     @Transactional
     @Modifying
     @Query("UPDATE Statistics s SET s.points = :points WHERE s.user_id.id = :id AND s.category.id = :catId AND s.difficulty.id = :diffId")
-            void updateStatistics(@Param("points")int points, @Param("id")Long appuser, @Param("catId")Long catId,@Param("diffId") Long diffId);
+    void updateStatistics(@Param("points") int points, @Param("id") Long appuser, @Param("catId") Long catId, @Param("diffId") Long diffId);
+@Query("SELECT COALESCE(SUM(s.points),0) FROM Statistics s WHERE s.user_id.id = ?1")
+    Integer calculateTotalUserPoints(Long id);
+    @Query("SELECT COALESCE(SUM(s.points),0) FROM Statistics s WHERE s.user_id.id = ?1 AND s.category.name = 'JavaScript'")
+    Integer calculateJSUserPoints(Long id);
+    @Query("SELECT COALESCE(SUM(s.points),0) FROM Statistics s WHERE s.user_id.id = ?1 AND s.category.name = 'HTML5'")
+    Integer calculateHtmlUserPoints(Long id);
+    @Query("SELECT COALESCE(SUM(s.points),0) FROM Statistics s WHERE s.user_id.id = ?1 AND s.category.name = 'CSS3'")
+    Integer calculateCssUserPoints(Long id);
+    @Query(value = "SELECT a.name_surname, c.name,d.name FROM Statistics s,Appuser a,Category c, Difficulty d WHERE s.user_id = a.id and s.category_id = c.id and s.difficulty_id = d.id AND s.user_id = ?1 AND s.points = (SELECT count(*) FROM Flashcards WHERE Flashcards.category_id = c.id AND Flashcards.difficulty_id = d.id)",nativeQuery = true)
+    List<Object> completed(Long id);
+
 }

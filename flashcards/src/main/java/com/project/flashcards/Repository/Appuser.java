@@ -33,6 +33,10 @@ private Set<Flashcard_points> flashcardPoints;
     @JsonIgnore
     @OneToMany(mappedBy = "appuser")
     private List<FavouriteFlashcards> favouriteFlashcards;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<AppuserAchievement> appuserAchievements;
+
     public Appuser() {
     }
 
@@ -110,6 +114,14 @@ private Set<Flashcard_points> flashcardPoints;
 
     public void setFavouriteFlashcards(List<FavouriteFlashcards> favouriteFlashcards) {
         this.favouriteFlashcards = favouriteFlashcards;
+    }
+
+    public List<AppuserAchievement> getAppuserAchievements() {
+        return appuserAchievements;
+    }
+
+    public void setAppuserAchievements(List<AppuserAchievement> appuserAchievements) {
+        this.appuserAchievements = appuserAchievements;
     }
 
     @Override

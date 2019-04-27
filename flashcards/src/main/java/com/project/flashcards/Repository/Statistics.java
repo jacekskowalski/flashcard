@@ -15,7 +15,6 @@ private Long id;
 @JoinColumn(name = "user_id")
 private Appuser user_id;
 //@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-private int sum;
 private int points;
     @ManyToOne
     @JoinColumn(name="category_id")
@@ -31,14 +30,6 @@ private Difficulty difficulty;
 
     public Statistics(Appuser user_id, Category category, Difficulty difficulty) {
         this.user_id = user_id;
-        this.category = category;
-        this.difficulty = difficulty;
-    }
-
-    public Statistics(Appuser user_id, int sum, int points, Category category, Difficulty difficulty) {
-        this.user_id = user_id;
-        this.sum = sum;
-        this.points = points;
         this.category = category;
         this.difficulty = difficulty;
     }
@@ -90,21 +81,12 @@ private Difficulty difficulty;
         this.category = category;
     }
 
-    public int getSum() {
-        return sum;
-    }
-
-    public void setSum(int sum) {
-        this.sum = sum;
-    }
-
     @Override
     public String toString() {
         return "Statistics{" +
                 "id=" + id +
                 ", user_id=" + user_id +
-                ", sum=" + sum +
-                ", points=" + points +
+               ", points=" + points +
                 ", category=" + category +
                 ", difficulty=" + difficulty +
                 '}';

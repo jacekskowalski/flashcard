@@ -19,4 +19,8 @@ Long getCategoryId(Long id);
     @Query("SELECT f.difficulty_id.id FROM Flashcards  f WHERE f.id = ?1")
     Long getDifficultyId(Long id);
     boolean existsById(Long id);
+@Query(value = "SELECT  count(*) FROM Flashcards f WHERE f.category_id = ?1 AND f.difficulty_id = ?2",nativeQuery = true)
+Integer countAllByCategoryAndDiffiulty(Long catId, Long diffId);
+@Query("SELECT f.question,f.answer,f.category_id.id, f.difficulty_id.id from Flashcards f WHERE f.category_id.id = 1 OR f.category_id.id = 2")
+    List<Flashcards> getAll();
 }
