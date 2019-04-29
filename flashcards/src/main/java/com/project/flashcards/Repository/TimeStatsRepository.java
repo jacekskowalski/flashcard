@@ -17,4 +17,8 @@ public interface TimeStatsRepository extends JpaRepository<TimeStats, Long> {
     void loginCounter(String email);
     @Query("SELECT t.countlogin FROM TimeStats t WHERE t.appuser.id= ?1")
     Integer getCountLogin(Long id);
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM TimeStats t WHERE t.appuser.id = ?1")
+    void deleteTimeStatsByUserId(Long id);
 }

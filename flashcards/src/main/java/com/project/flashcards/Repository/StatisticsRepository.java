@@ -30,7 +30,7 @@ public interface StatisticsRepository extends JpaRepository<Statistics, Long> {
     Integer calculateHtmlUserPoints(Long id);
     @Query("SELECT COALESCE(SUM(s.points),0) FROM Statistics s WHERE s.user_id.id = ?1 AND s.category.name = 'CSS3'")
     Integer calculateCssUserPoints(Long id);
-    @Query(value = "SELECT a.name_surname, c.name,d.name FROM Statistics s,Appuser a,Category c, Difficulty d WHERE s.user_id = a.id and s.category_id = c.id and s.difficulty_id = d.id AND s.user_id = ?1 AND s.points = (SELECT count(*) FROM Flashcards WHERE Flashcards.category_id = c.id AND Flashcards.difficulty_id = d.id)",nativeQuery = true)
+    @Query(value = "SELECT a.name_surname, c.name as category,d.name as difficulty FROM Statistics s,Appuser a,Category c, Difficulty d WHERE s.user_id = a.id and s.category_id = c.id and s.difficulty_id = d.id AND s.user_id = ?1 AND s.points = (SELECT count(*) FROM Flashcards WHERE Flashcards.category_id = c.id AND Flashcards.difficulty_id = d.id)",nativeQuery = true)
     List<Object> completed(Long id);
 
 }

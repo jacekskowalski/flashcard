@@ -89,13 +89,13 @@ public class AchievementController {
         if(htmlscore == 20) {
             createAchievement(id,"Adept HTML5");
                  }else if(htmlscore == 50){
-           createAchievement(id,"Mistrz HTML5"); ;
+           createAchievement(id,"Mistrz HTML5");
                   }
         int cssscore = statisticsRepository.calculateCssUserPoints(id).intValue();
         if(cssscore == 20) {
-            createAchievement(id,"Adept CSS3"); ;
+            createAchievement(id,"Adept CSS3");
                     }else if(cssscore == 50){
-            createAchievement(id,"Mistrz CSS3"); ;
+            createAchievement(id,"Mistrz CSS3");
         }
 
         Iterator it = statisticsRepository.completed(id).iterator();
@@ -108,7 +108,7 @@ public class AchievementController {
                        }else if(String.valueOf(obj[2]).equalsIgnoreCase("Średniozaawansowany")){
                    createAchievement(id,"Coraz lepiej");
                }else if(String.valueOf(obj[2]).equalsIgnoreCase("Zaawansowany")){
-                   createAchievement(id,"");
+                   createAchievement(id,"Mistrz znaczników");
                }
             }else if(String.valueOf(obj[1]).equalsIgnoreCase("CSS3")){
                 if(String.valueOf(obj[2]).equalsIgnoreCase("Początkujący")){
@@ -116,7 +116,7 @@ public class AchievementController {
                 }else if(String.valueOf(obj[2]).equalsIgnoreCase("Średniozaawansowany")){
                     createAchievement(id,"Oby tak dalej");
                 }else if(String.valueOf(obj[2]).equalsIgnoreCase("Zaawansowany")){
-                    createAchievement(id,"");
+                    createAchievement(id,"Czarodziej");
                 }
             }else if(String.valueOf(obj[1]).equalsIgnoreCase("JavaScript")){
                 if(String.valueOf(obj[2]).equalsIgnoreCase("Początkujący")){
@@ -128,7 +128,6 @@ public class AchievementController {
                 }
             }
         }
-
          return appuserAchievementRepository.findAllByUser_id(id);
     }
 
