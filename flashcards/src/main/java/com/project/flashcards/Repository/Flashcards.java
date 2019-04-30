@@ -1,6 +1,7 @@
 package com.project.flashcards.Repository;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,12 +16,15 @@ public class Flashcards implements Serializable {
         private Long id;
 private String question;
 private String answer;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 @ManyToOne
 @JoinColumn(name="category_id")
 private Category category_id;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 @ManyToOne
 @JoinColumn(name="difficulty_id")
 private Difficulty difficulty_id;
+@JsonIgnore
 @OneToMany(mappedBy = "flashcards")
     List<Flashcard_points> flashcards;
 @JsonIgnore
@@ -101,7 +105,7 @@ List<FavouriteFlashcards> favouriteFlashcards;
         return "Flashcards{" +
                 "id=" + id +
                 ", question='" + question + '\'' +
-                ", answer='" + answer + '\'' +
+                ", answer='" + answer +
                 '}';
     }
 }

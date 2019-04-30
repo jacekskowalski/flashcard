@@ -182,12 +182,14 @@ private TimeStatsRepository timeStatsRepository;
     public ResponseEntity<?> createQuiz(@RequestBody FlashcardInitializer flashcardInitializer) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        Optional<Appuser> appuser = appuserRepository.findById(flashcardInitializer.getId());
-        Appuser user = appuser.get();
-if(Objects.isNull(difficultyRepository.findByName(flashcardInitializer.getDifficultyName())) ||
+
+if(! appuserRepository.existsById(flashcardInitializer.getId()) ||
+        Objects.isNull(difficultyRepository.findByName(flashcardInitializer.getDifficultyName())) ||
         Objects.isNull(categoryRepository.findByName(flashcardInitializer.getCategoryName()))){
     return new ResponseEntity<>(gson.toJson("Data not found"), responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
         }else {
+    Optional<Appuser> appuser = appuserRepository.findById(flashcardInitializer.getId());
+    Appuser user = appuser.get();
     Difficulty difficulty = difficultyRepository.findByName(flashcardInitializer.getDifficultyName());
     Category category = categoryRepository.findByName(flashcardInitializer.getCategoryName());
     Statistics newstatistics = new Statistics(user, 0, category, difficulty);
@@ -199,7 +201,8 @@ if(Objects.isNull(difficultyRepository.findByName(flashcardInitializer.getDiffic
             flashcardPointsRepository.save(flashcard_points);
     }
     statisticsRepository.save(newstatistics);
-    return new ResponseEntity<>(responseHeaders, HttpStatus.OK);
+
+    return new ResponseEntity<>(flashcardPoints,responseHeaders, HttpStatus.OK);
 }
     }
 
