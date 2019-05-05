@@ -12,8 +12,8 @@ import java.util.List;
 @Repository
 @CrossOrigin
 public interface FavouriteFlashcardsRepository extends JpaRepository<FavouriteFlashcards, Long> {
-   @Query("SELECT f.flashcards.id,f.flashcards.question, f.flashcards.answer FROM FavouriteFlashcards f WHERE f.appuser.id = ?1")
-   List<FavouriteFlashcards> getAllFlashcards(Long id);
+   @Query("SELECT f.flashcards.id,f.flashcards.question, f.flashcards.answer, (SELECT c.name FROM Category c, f.flashcards WHERE c.id = f.flashcards.category_id), (SELECT d.name FROM Difficulty d, f.flashcards WHERE d.id = f.flashcards.difficulty_id) FROM FavouriteFlashcards f WHERE f.appuser.id = ?1")
+   List<Object> getAllFlashcards(Long id);
     @Query(value = "SELECT COALESCE(COUNT(*),0) FROM FavouriteFlashcards f WHERE f.appuser_id = ?1",nativeQuery = true)
     Integer sumAllFlashcards(Long id);
     @Query("SELECT f FROM FavouriteFlashcards f WHERE f.appuser.id =?1 AND f.flashcards.id =?2")

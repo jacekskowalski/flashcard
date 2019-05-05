@@ -36,6 +36,7 @@ private TimeStatsRepository timeStatsRepository;
     private FavouriteFlashcardsRepository favouriteFlashcardsRepository;
     @Autowired
     private AchievementRepository achievementRepository;
+
     Gson gson = new Gson();
 
     public StatisticsRepository getStatisticsRepository() {
@@ -182,28 +183,32 @@ private TimeStatsRepository timeStatsRepository;
     public ResponseEntity<?> createQuiz(@RequestBody FlashcardInitializer flashcardInitializer) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-if(! appuserRepository.existsById(flashcardInitializer.getId()) ||
+        if(! Objects.isNull(statisticsRepository.checkIfExists(flashcardInitializer.getId(),
+                flashcardInitializer.getCategoryName(),flashcardInitializer.getDifficultyName()))){
+            return new ResponseEntity<>(gson.toJson("Data exists"),responseHeaders, HttpStatus.FORBIDDEN);
+        }
+if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
         Objects.isNull(difficultyRepository.findByName(flashcardInitializer.getDifficultyName())) ||
         Objects.isNull(categoryRepository.findByName(flashcardInitializer.getCategoryName()))){
     return new ResponseEntity<>(gson.toJson("Data not found"), responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
-        }else {
-    Optional<Appuser> appuser = appuserRepository.findById(flashcardInitializer.getId());
-    Appuser user = appuser.get();
-    Difficulty difficulty = difficultyRepository.findByName(flashcardInitializer.getDifficultyName());
-    Category category = categoryRepository.findByName(flashcardInitializer.getCategoryName());
-    Statistics newstatistics = new Statistics(user, 0, category, difficulty);
-    List<Flashcards> flashcardPoints = flashcards.findBySelectedOptions(flashcardInitializer.getCategoryName(),
-            flashcardInitializer.getDifficultyName());
-    for (Flashcards f : flashcardPoints) {
+        }
+      else {
+           Optional<Appuser> appuser = appuserRepository.findById(flashcardInitializer.getId());
+           Appuser user = appuser.get();
+           Difficulty difficulty = difficultyRepository.findByName(flashcardInitializer.getDifficultyName());
+           Category category = categoryRepository.findByName(flashcardInitializer.getCategoryName());
+           Statistics newstatistics = new Statistics(user, 0, category, difficulty);
+           List<Flashcards> flashcardPoints = flashcards.findBySelectedOptions(flashcardInitializer.getCategoryName(),
+                   flashcardInitializer.getDifficultyName());
+  for (Flashcards f : flashcardPoints) {
         Flashcard_points flashcard_points = new Flashcard_points(user, f, 0);
         if (!Objects.isNull(f))
             flashcardPointsRepository.save(flashcard_points);
     }
     statisticsRepository.save(newstatistics);
 
-    return new ResponseEntity<>(flashcardPoints,responseHeaders, HttpStatus.OK);
-}
+           return new ResponseEntity<>(flashcardPoints, responseHeaders, HttpStatus.OK);
+       }
     }
 
     @PutMapping("/flashcard")
@@ -291,8 +296,10 @@ if(! appuserRepository.existsById(flashcardInitializer.getId()) ||
             Object[] obj = (Object[]) newit.next();
             LinkedHashMap<String, String> data = new LinkedHashMap<>();
             data.put("flashcard_id", String.valueOf(obj[0]));
-            data.put("category", String.valueOf(obj[1]));
-            data.put("difficulty", String.valueOf(obj[2]));
+            data.put("question", String.valueOf(obj[1]));
+            data.put("answer", String.valueOf(obj[2]));
+            data.put("category", String.valueOf(obj[3]));
+            data.put("difficulty", String.valueOf(obj[4]));
             lista.add(data);
         }
         return lista;
@@ -307,4 +314,4 @@ if(! appuserRepository.existsById(flashcardInitializer.getId()) ||
         }
     }
 
-}
+ }

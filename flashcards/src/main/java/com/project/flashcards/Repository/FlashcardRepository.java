@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Repository
 public interface FlashcardRepository extends JpaRepository<Flashcards, Long> {
-    @Query(value = "select new Flashcards(f.id ,f.question,f.answer) from Flashcards f where f.category_id.name = ?1 and f.difficulty_id.name = ?2")
+    @Query(value = "select new Flashcards(f.id ,f.question,f.answer,f.category_id, f.difficulty_id) from Flashcards f where f.category_id.name = ?1 and f.difficulty_id.name = ?2")
     List<Flashcards> findBySelectedOptions(String category, String difficulty);
 @Query("SELECT f.category_id.id FROM Flashcards f WHERE f.id = ?1")
 Long getCategoryId(Long id);

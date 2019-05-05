@@ -16,11 +16,9 @@ public class Flashcards implements Serializable {
         private Long id;
 private String question;
 private String answer;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 @ManyToOne
 @JoinColumn(name="category_id")
 private Category category_id;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 @ManyToOne
 @JoinColumn(name="difficulty_id")
 private Difficulty difficulty_id;
@@ -46,6 +44,14 @@ List<FavouriteFlashcards> favouriteFlashcards;
     public Flashcards(String question, String answer) {
         this.question = question;
         this.answer = answer;
+    }
+
+    public Flashcards(Long id,String question, String answer, Category category_id, Difficulty difficulty_id) {
+        this.id = id;
+         this.question = question;
+        this.answer = answer;
+        this.category_id = category_id;
+        this.difficulty_id = difficulty_id;
     }
 
     public Long getId() {
@@ -105,7 +111,9 @@ List<FavouriteFlashcards> favouriteFlashcards;
         return "Flashcards{" +
                 "id=" + id +
                 ", question='" + question + '\'' +
-                ", answer='" + answer +
+                ", answer='" + answer + '\'' +
+                ", category_id=" + category_id +
+                ", difficulty_id=" + difficulty_id +
                 '}';
     }
 }

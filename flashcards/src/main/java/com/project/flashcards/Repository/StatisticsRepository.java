@@ -14,6 +14,8 @@ import java.util.Optional;
 public interface StatisticsRepository extends JpaRepository<Statistics, Long> {
     @Query(value = "SELECT c.name as category,d.name as difficulty, s.points,(SELECT  count(*) FROM Flashcards WHERE Flashcards.category_id = c.id AND Flashcards.difficulty_id = d.id) FROM Statistics s,Appuser a, Category c, Difficulty d where s.user_id = a.id and s.category_id = c.id and s.difficulty_id = d.id AND s.user_id = ?1", nativeQuery = true)
     List<Object> findAllByUser(Long id);
+    @Query("SELECT s FROM Statistics  s WHERE s.user_id.id = ?1 AND s.category.id = (SELECT c.id FROM Category c WHERE c.name =?2) AND s.difficulty.id = (SELECT d.id FROM Difficulty d WHERE d.name =?3)")
+    Statistics checkIfExists(Long id, String cat, String diff);
     @Transactional
     @Modifying
     @Query("DELETE FROM Statistics s WHERE s.user_id.id = ?1")

@@ -9,17 +9,23 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Objects;
 
 @CrossOrigin
 @RestController
-public class IndexController {
-
+public class IndexController implements AuthenticationProvider {
+//SimpleUrlAuthenticationSuccessHandler
 @Value("${spring.sendgrid.api-key}")
 private String apiKey;
     @Autowired
@@ -58,7 +64,7 @@ Gson gson =new Gson();
     public void setTimeStatsRepository(TimeStatsRepository timeStatsRepository) {
         this.timeStatsRepository = timeStatsRepository;
     }
-
+/*
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Appuser appuser) {
             String getPswd = appuserRepository.findPswd(appuser.getEmail());
@@ -73,7 +79,7 @@ Gson gson =new Gson();
                return new ResponseEntity<>(appuserRepository.findAppuserByEmail(appuser.getEmail()), HttpStatus.OK);
           }
     }
-
+*/
 
 @PostMapping("/remember")
 public ResponseEntity<?> remember(@RequestBody Appuser appuser) throws IOException{
@@ -104,7 +110,7 @@ Appuser getpswd= appuserRepository.findAppuserByEmail(appuser.getEmail());
     return new ResponseEntity<>(gson.toJson("Email sent"),responseHeaders, HttpStatus.OK);
 }
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody Appuser user){
+    public ResponseEntity<?> signup(@Valid @RequestBody Appuser user){
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
               if(appuserRepository.existsByEmail(user.getEmail()))
@@ -115,7 +121,7 @@ Appuser getpswd= appuserRepository.findAppuserByEmail(appuser.getEmail());
             appuser.setName_surname(user.getName_surname());
             appuser.setEmail(user.getEmail());
             appuser.setPswd(bCryptPasswordEncoder.encode(user.getPswd()));
-            appuserRepository.save(appuser);
+           appuserRepository.save(appuser);
                   TimeStats timeStats=new TimeStats(0,0.0,appuser);
                   timeStatsRepository.save(timeStats);
             return new ResponseEntity<>(gson.toJson("Account created"),responseHeaders, HttpStatus.OK);
@@ -137,5 +143,28 @@ public ResponseEntity<?> changePassword(@RequestBody Appuser appuser){
              return  new ResponseEntity<>( gson.toJson("Password changed"),responseHeaders, HttpStatus.OK);
 }
 }
+
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        String name = authentication.getName();
+        String password = authentication.getCredentials().toString();
+        String getPswd = appuserRepository.findPswd(name);
+        if (!appuserRepository.existsByEmail(name)
+                || bCryptPasswordEncoder.matches(bCryptPasswordEncoder.encode(password),
+                getPswd)) {
+            throw new BadCredentialsException("Wrong data") {
+            };
+        }
+        else{
+          timeStatsRepository.loginCounter(name);
+        return new UsernamePasswordAuthenticationToken(name, password, new ArrayList<>());
+        }
+    }
+
+    @Override
+    public boolean supports(Class<?> aClass) {
+       // return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(aClass));
+        return  true;
+    }
 
 }
