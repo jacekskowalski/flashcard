@@ -154,6 +154,7 @@ System.out.println(appuserRepository.findPswd(appuser.getEmail()));
             return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }else {
 Appuser appu= appuserRepository.findAppuserByEmail(appuser.getEmail());
+timeStatsRepository.loginCounter(appuser.getEmail());
             return new ResponseEntity<>(
                     new UserToken(Jwts.builder().setSubject(appu.getEmail()).claim("roles", "user")
                             .setIssuedAt(new Date()).signWith(SignatureAlgorithm.HS256, "123#&*zcvAWEE999").compact(),

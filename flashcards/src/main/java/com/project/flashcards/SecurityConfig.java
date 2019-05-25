@@ -51,7 +51,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/*.ico").permitAll()
                 .and()
                 .httpBasic().disable().csrf().disable().headers().frameOptions().disable();
-             //   .and()
 
     }
 /*
@@ -105,7 +104,7 @@ public AuthFilter authenticationFilter() throws Exception {
         return source;
     }
 
-/*
+
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
         httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
