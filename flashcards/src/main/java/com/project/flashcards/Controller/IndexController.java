@@ -1,41 +1,54 @@
 package com.project.flashcards.Controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.project.flashcards.Repository.*;
 import com.sendgrid.*;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.bind.annotation.*;
-
+import javax.servlet.*;
+import javax.servlet.http.*;
 import javax.validation.Valid;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
+import java.util.*;
 
+import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
+
+//implements   AuthenticationProvider
 @CrossOrigin
 @RestController
-public class IndexController implements AuthenticationProvider {
-//SimpleUrlAuthenticationSuccessHandler
+public class IndexController {
 @Value("${spring.sendgrid.api-key}")
 private String apiKey;
+    Appuser appuser;
     @Autowired
     private AppuserRepository appuserRepository;
     @Autowired
     private FlashcardRepository flashcards;
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-@Autowired
-private TimeStatsRepository timeStatsRepository;
+    private  BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private TimeStatsRepository timeStatsRepository;
+
     public AppuserRepository getAppuserRepository() {
         return appuserRepository;
     }
@@ -64,22 +77,7 @@ Gson gson =new Gson();
     public void setTimeStatsRepository(TimeStatsRepository timeStatsRepository) {
         this.timeStatsRepository = timeStatsRepository;
     }
-/*
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Appuser appuser) {
-            String getPswd = appuserRepository.findPswd(appuser.getEmail());
-          HttpHeaders responseHeaders = new HttpHeaders();
-          responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-          if (!appuserRepository.existsByEmail(appuser.getEmail())
-                  || bCryptPasswordEncoder.matches(bCryptPasswordEncoder.encode(appuser.getPswd()),
-                  getPswd)) {
-              return new ResponseEntity<>(gson.toJson("Wrong data"),responseHeaders,HttpStatus.UNPROCESSABLE_ENTITY);
-          } else {
-           timeStatsRepository.loginCounter(appuser.getEmail());
-               return new ResponseEntity<>(appuserRepository.findAppuserByEmail(appuser.getEmail()), HttpStatus.OK);
-          }
-    }
-*/
+
 
 @PostMapping("/remember")
 public ResponseEntity<?> remember(@RequestBody Appuser appuser) throws IOException{
@@ -120,13 +118,16 @@ Appuser getpswd= appuserRepository.findAppuserByEmail(appuser.getEmail());
             Appuser appuser =new Appuser();
             appuser.setName_surname(user.getName_surname());
             appuser.setEmail(user.getEmail());
-            appuser.setPswd(bCryptPasswordEncoder.encode(user.getPswd()));
+            appuser.setPswd(BCrypt.hashpw(user.getPswd(), BCrypt.gensalt(12)));
            appuserRepository.save(appuser);
                   TimeStats timeStats=new TimeStats(0,0.0,appuser);
                   timeStatsRepository.save(timeStats);
             return new ResponseEntity<>(gson.toJson("Account created"),responseHeaders, HttpStatus.OK);
         }
            }
+
+
+
 
 @PutMapping("/reset")
 public ResponseEntity<?> changePassword(@RequestBody Appuser appuser){
@@ -144,27 +145,53 @@ public ResponseEntity<?> changePassword(@RequestBody Appuser appuser){
 }
 }
 
-    @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String name = authentication.getName();
-        String password = authentication.getCredentials().toString();
-        String getPswd = appuserRepository.findPswd(name);
-        if (!appuserRepository.existsByEmail(name)
-                || bCryptPasswordEncoder.matches(bCryptPasswordEncoder.encode(password),
-                getPswd)) {
-            throw new BadCredentialsException("Wrong data") {
-            };
-        }
-        else{
-          timeStatsRepository.loginCounter(name);
-        return new UsernamePasswordAuthenticationToken(name, password, new ArrayList<>());
+@PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Appuser appuser) {
+System.out.println(appuserRepository.findPswd(appuser.getEmail()));
+        String getPswd = appuserRepository.findPswd(appuser.getEmail());
+        if (!appuserRepository.existsByEmail(appuser.getEmail()) || !bCryptPasswordEncoder.matches(appuser.getPswd(),getPswd))
+        {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }else {
+Appuser appu= appuserRepository.findAppuserByEmail(appuser.getEmail());
+            return new ResponseEntity<>(
+                    new UserToken(Jwts.builder().setSubject(appu.getEmail()).claim("roles", "user")
+                            .setIssuedAt(new Date()).signWith(SignatureAlgorithm.HS256, "123#&*zcvAWEE999").compact(),
+                            appu.getId(),appu.getName_surname(),appu.getEmail()),
+                    HttpStatus.OK);
         }
     }
+/*
+            @Override
+            public Authentication authenticate(Authentication authentication) throws AuthenticationException, BadCredentialsException {
 
-    @Override
-    public boolean supports(Class<?> aClass) {
-       // return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(aClass));
-        return  true;
-    }
+              String name= "emalina@hotmail.com";
 
+             String password= "emalina6";
+                String getPswd = appuserRepository.findPswd(name).trim();
+            if (!appuserRepository.existsByEmail(name) || !bCryptPasswordEncoder.matches(password,getPswd))
+                {
+                    throw new BadCredentialsException("Not found");
+                }
+                newappuser(name);
+                    timeStatsRepository.loginCounter(name);
+                return new UsernamePasswordAuthenticationToken(name, password, new ArrayList<>());
+
+            }
+
+            @Override
+            public boolean supports(Class<?> aClass) {
+                return UsernamePasswordAuthenticationToken.class.isAssignableFrom(aClass);
+                  }
+*/
+public void newappuser(String email) {
+    setAppuser(appuserRepository.findAppuserByEmail(email));
 }
+    public Appuser getAppuser() {
+        return appuser;
+    }
+
+    public void setAppuser(Appuser appuser) {
+        this.appuser = appuser;
+    }
+  }

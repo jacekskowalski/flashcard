@@ -2,6 +2,7 @@ package com.project.flashcards.Repository;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@CrossOrigin
 public class Appuser implements Serializable {
     private static final long serialVersionUID = -2056422678204150939L;
     @Id

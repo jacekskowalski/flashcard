@@ -1,12 +1,14 @@
 package com.project.flashcards.Repository;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
+@CrossOrigin
 public class Achievement implements Serializable {
     private static final long serialVersionUID = 1700023747685784741L;
     @Id

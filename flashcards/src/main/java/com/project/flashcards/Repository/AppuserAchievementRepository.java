@@ -13,7 +13,7 @@ public interface AppuserAchievementRepository extends JpaRepository<AppuserAchie
     @Query("SELECT aa.achievement.name FROM AppuserAchievement aa WHERE aa.user.id = ?1")
     List<String> findAllByUser_id(Long id);
     @Query("SELECT aa.user, aa.achievement FROM AppuserAchievement aa WHERE aa.user.id = ?1 AND aa.achievement.name = ?2")
-    List<AppuserAchievement> findByIds(Long userId, String achievementNAme);
+    List<AppuserAchievement> findByIds(Long userId, String achievementName);
     @Transactional
     @Modifying
     @Query("DELETE FROM AppuserAchievement a WHERE a.user.id = ?1")
