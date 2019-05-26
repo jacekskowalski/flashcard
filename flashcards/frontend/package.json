@@ -1,11 +1,26 @@
 {
-  "name": "frontend",
+  "name": "wololo",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.8.3",
-    "react-dom": "^16.8.3",
-    "react-scripts": "2.1.5"
+    "bootstrap": "^4.3.1",
+    "chart.js": "^2.8.0",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.4.0",
+    "mdbreact": "^4.13.0",
+    "react": "^16.8.6",
+    "react-bootstrap": "^1.0.0-beta.8",
+    "react-chartjs-2": "^2.7.6",
+    "react-dom": "^16.8.6",
+    "react-fontawesome": "^1.6.1",
+    "react-google-recaptcha": "^1.0.5",
+    "react-responsive-modal": "^3.6.0",
+    "react-router": "^5.0.0",
+    "react-router-dom": "^5.0.0",
+    "react-scripts": "2.1.8",
+    "react-simple-image-slider": "^1.0.2",
+    "react-slideshow-image": "^1.1.5",
+    "react-svg": "^9.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
