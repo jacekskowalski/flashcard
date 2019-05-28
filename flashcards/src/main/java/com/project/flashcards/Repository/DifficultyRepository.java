@@ -10,4 +10,6 @@ public interface DifficultyRepository extends JpaRepository<Difficulty, Long> {
 @Query("SELECT d FROM Difficulty d WHERE d.name =?1")
  Difficulty existsByName(String example);
   Difficulty findByName(String name);
+    @Query("SELECT d.id FROM Difficulty d WHERE d.name = ?1")
+    Long getDifficultyId(String name);
 }

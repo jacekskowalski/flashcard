@@ -2,14 +2,19 @@ package com.project.flashcards.Controller;
 
 import com.google.gson.Gson;
 import com.project.flashcards.Repository.*;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.xml.transform.Result;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -25,6 +30,10 @@ public class AchievementController {
     private FavouriteFlashcardsRepository favouriteFlashcardsRepository;
     @Autowired
     private AchievementRepository achievementRepository;
+      @Autowired
+    private DifficultyRepository difficultyRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
     Gson gson = new Gson();
 
     public StatisticsRepository getStatisticsRepository() {
@@ -68,33 +77,34 @@ public class AchievementController {
     }
 
     @GetMapping("/achievement/{id}")
-    public List<String> getAllAchievements(@PathVariable("id") Long id){
+    @ApiOperation(value = "Returns all user achievements")
+        public List<String> getAllAchievements(@PathVariable("id") Long id){
         Optional<Appuser> getappuser=  appuserRepository.findById(id);
         Appuser newappuser = getappuser.get();
         int userScore = statisticsRepository.calculateTotalUserPoints(id).intValue();
         if(userScore == 20) {
              createAchievement(id, "Dobre początki");
-        }else if( userScore == 50){
+        }else if( userScore == 100){
             createAchievement(id, "Tauzen");
-        }else if(userScore == 100){
+        }else if(userScore == 1000){
             createAchievement(id, "Ważny krok");
         }
         int jsscore = statisticsRepository.calculateJSUserPoints(id).intValue();
-        if(jsscore == 20) {
+        if(jsscore == 1000) {
             createAchievement(id,"Adept JavaScript") ;
-        }else if(jsscore == 50){
+        }else if(jsscore == 5000){
             createAchievement(id,"Mistrz JavaScript");
         }
         int htmlscore = statisticsRepository.calculateHtmlUserPoints(id).intValue();
-        if(htmlscore == 20) {
+        if(htmlscore == 1000) {
             createAchievement(id,"Adept HTML5");
-                 }else if(htmlscore == 50){
+                 }else if(htmlscore == 5000){
            createAchievement(id,"Mistrz HTML5");
                   }
         int cssscore = statisticsRepository.calculateCssUserPoints(id).intValue();
-        if(cssscore == 20) {
+        if(cssscore == 1000) {
             createAchievement(id,"Adept CSS3");
-                    }else if(cssscore == 50){
+                    }else if(cssscore == 5000){
             createAchievement(id,"Mistrz CSS3");
         }
 
@@ -130,8 +140,28 @@ public class AchievementController {
         }
          return appuserAchievementRepository.findAllByUser_id(id);
     }
+/*
+    @PostMapping("/achievement")
+    @ApiOperation(value = "")
+    public  ResponseEntity<?> result(@RequestBody ResultHelperComponent result) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+        if (Objects.isNull(result))
+            return new ResponseEntity<>(gson.toJson("Data not found"), responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
+        else {
+            Long getcategoryId = categoryRepository.getCategoryId(result.getCategoryName());
+            Long getdifficultyId = difficultyRepository.getDifficultyId(result.getDiificultyName());
+            Appuser app= appuserRepository.findById(result.getApuserId()).get();
+            Difficulty diff= difficultyRepository.findByName(result.getDiificultyName());
+            Category cat= categoryRepository.findByName(result.getCategoryName());
+         //   Results newresult = new Results(app, result.getTime(), cat, diff, );
 
 
+
+        return new ResponseEntity<>(gson.toJson("result sent"), responseHeaders, HttpStatus.OK);
+    }
+    }
+*/
     public void createAchievement(Long apuserId, String name){
 
              if(appuserAchievementRepository.findByIds(apuserId,name).isEmpty()){
@@ -141,5 +171,22 @@ public class AchievementController {
             AppuserAchievement appuserAchievement= new AppuserAchievement(newappuser, achievement);
             appuserAchievementRepository.save(appuserAchievement);
                    }
+    }
+
+
+    public DifficultyRepository getDifficultyRepository() {
+        return difficultyRepository;
+    }
+
+    public void setDifficultyRepository(DifficultyRepository difficultyRepository) {
+        this.difficultyRepository = difficultyRepository;
+    }
+
+    public CategoryRepository getCategoryRepository() {
+        return categoryRepository;
+    }
+
+    public void setCategoryRepository(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
     }
 }

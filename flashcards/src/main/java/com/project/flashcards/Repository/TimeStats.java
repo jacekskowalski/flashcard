@@ -15,7 +15,6 @@ public class TimeStats implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private int countlogin;
-    private double time;
     @OneToOne
     @JoinColumn(name = "user_id")
     private Appuser appuser;
@@ -32,24 +31,13 @@ public class TimeStats implements Serializable {
 
     public TimeStats(int countlogin, double time) {
         this.countlogin = countlogin;
-        this.time = time;
-    }
+        }
 
-    public TimeStats(int countlogin, double time, Appuser appuser) {
+    public TimeStats(int countlogin,  Appuser appuser) {
         this.countlogin = countlogin;
-        this.time = time;
         this.appuser = appuser;
     }
 
-
-
-    public double getTime() {
-        return time;
-    }
-
-    public void setTime(double time) {
-        this.time = time;
-    }
 
     public Appuser getAppuser() {
         return appuser;

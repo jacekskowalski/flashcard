@@ -1,37 +1,26 @@
 package com.project.flashcards.Controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.project.flashcards.Repository.*;
 import com.sendgrid.*;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.bind.annotation.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.validation.Valid;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.Principal;
-import java.util.*;
 
-import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
 
 //implements   AuthenticationProvider
 @CrossOrigin
@@ -80,8 +69,9 @@ Gson gson =new Gson();
 
 
 @PostMapping("/remember")
-public ResponseEntity<?> remember(@RequestBody Appuser appuser) throws IOException{
-Appuser getpswd= appuserRepository.findAppuserByEmail(appuser.getEmail());
+@ApiOperation(value = "Requires email string and returns link to reset password")
+public ResponseEntity<?> remember(@RequestBody Map<String,String> email) throws IOException{
+Appuser getpswd= appuserRepository.findAppuserByEmail(email.get("email"));
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.APPLICATION_JSON);
     if(Objects.isNull(getpswd)){
@@ -108,6 +98,7 @@ Appuser getpswd= appuserRepository.findAppuserByEmail(appuser.getEmail());
     return new ResponseEntity<>(gson.toJson("Email sent"),responseHeaders, HttpStatus.OK);
 }
     @PostMapping("/signup")
+    @ApiOperation(value = "Requires name_surname, email, pswd")
     public ResponseEntity<?> signup(@Valid @RequestBody Appuser user){
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -120,7 +111,7 @@ Appuser getpswd= appuserRepository.findAppuserByEmail(appuser.getEmail());
             appuser.setEmail(user.getEmail());
             appuser.setPswd(BCrypt.hashpw(user.getPswd(), BCrypt.gensalt(12)));
            appuserRepository.save(appuser);
-                  TimeStats timeStats=new TimeStats(0,0.0,appuser);
+                  TimeStats timeStats=new TimeStats(0,appuser);
                   timeStatsRepository.save(timeStats);
             return new ResponseEntity<>(gson.toJson("Account created"),responseHeaders, HttpStatus.OK);
         }
@@ -130,24 +121,26 @@ Appuser getpswd= appuserRepository.findAppuserByEmail(appuser.getEmail());
 
 
 @PutMapping("/reset")
-public ResponseEntity<?> changePassword(@RequestBody Appuser appuser){
+@ApiOperation(value = "Requires email, pswd")
+public ResponseEntity<?> changePassword(@RequestBody Appuser appuser_email){
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        if(Objects.isNull(appuser))
+        if(Objects.isNull(appuser_email))
             return new ResponseEntity<>(gson.toJson("No content"),responseHeaders, HttpStatus.NO_CONTENT);
 
-         else if(! appuserRepository.existsByEmail(appuser.getEmail())){
+         else if(! appuserRepository.existsByEmail(appuser_email.getEmail())){
             return new ResponseEntity<>( gson.toJson("Account not exist"),responseHeaders, HttpStatus.NOT_FOUND);
         }else{
-             String newPassword= bCryptPasswordEncoder.encode(appuser.getPswd());
-             appuserRepository.changeUserPassword(appuser.getEmail(),newPassword);
+             String newPassword= bCryptPasswordEncoder.encode(appuser_email.getPswd());
+             appuserRepository.changeUserPassword(appuser_email.getEmail(),newPassword);
              return  new ResponseEntity<>( gson.toJson("Password changed"),responseHeaders, HttpStatus.OK);
 }
 }
 
 @PostMapping("/login")
+@ApiOperation(value = "Requires email, pswd")
     public ResponseEntity<?> login(@RequestBody Appuser appuser) {
-System.out.println(appuserRepository.findPswd(appuser.getEmail()));
+
         String getPswd = appuserRepository.findPswd(appuser.getEmail());
         if (!appuserRepository.existsByEmail(appuser.getEmail()) || !bCryptPasswordEncoder.matches(appuser.getPswd(),getPswd))
         {

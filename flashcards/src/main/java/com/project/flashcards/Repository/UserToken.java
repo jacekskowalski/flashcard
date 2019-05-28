@@ -5,17 +5,17 @@ public class UserToken {
     private String token;
     private Long id;
     private String email;
-    private String password;
+    private String name_surname;
 
     public UserToken() {
     }
 
-    public UserToken(String token, Long id, String email, String password) {
+    public UserToken(String token, Long id, String name_surname, String email) {
         this.token = token;
         this.id = id;
+        this.name_surname=name_surname;
         this.email = email;
-        this.password = password;
-    }
+        }
 
     public String getToken() {
         return token;
@@ -41,11 +41,11 @@ public class UserToken {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getName_surname() {
+        return name_surname;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setName_surname(String name_surname) {
+        this.name_surname = name_surname;
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 public class StatisticsHelperComponent {
     private Long apuserId;
     private Long flashcardsId;
+    private String discovered;
 
     public StatisticsHelperComponent() {
     }
@@ -18,6 +19,13 @@ public class StatisticsHelperComponent {
         this.apuserId = apuserId;
         this.flashcardsId = flashcardsId;
     }
+
+    public StatisticsHelperComponent(Long apuserId, Long flashcardsId, String discovered) {
+        this.apuserId = apuserId;
+        this.flashcardsId = flashcardsId;
+        this.discovered = discovered;
+    }
+
     public Long getApuserId() {
         return apuserId;
     }
@@ -34,5 +42,11 @@ public class StatisticsHelperComponent {
         this.flashcardsId = flashcardsId;
     }
 
+    public String getDiscovered() {
+        return discovered;
+    }
 
+    public void setDiscovered(String discovered) {
+        this.discovered = discovered;
+    }
 }

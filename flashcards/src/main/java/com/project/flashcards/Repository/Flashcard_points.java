@@ -17,6 +17,7 @@ private  Long id;
     @JoinColumn(name="flashcards_id")
      Flashcards flashcards;
     private int point;
+    private String discovered;
 
     public Flashcard_points() {
     }
@@ -25,6 +26,14 @@ private  Long id;
         this.appuser = appuser;
         this.flashcards = flashcards;
         this.point = point;
+    }
+
+
+    public Flashcard_points(Appuser appuser, Flashcards flashcards, int point, String discovered) {
+        this.appuser = appuser;
+        this.flashcards = flashcards;
+        this.point = point;
+        this.discovered = discovered;
     }
 
     public Appuser getAppuser() {
@@ -57,6 +66,14 @@ private  Long id;
 
     public void setPoint(int point) {
         this.point = point;
+    }
+
+    public String getDiscovered() {
+        return discovered;
+    }
+
+    public void setDiscovered(String discovered) {
+        this.discovered = discovered;
     }
 
     @Override

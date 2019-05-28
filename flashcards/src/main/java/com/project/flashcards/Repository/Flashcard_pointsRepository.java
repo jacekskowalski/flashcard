@@ -14,12 +14,21 @@ public interface Flashcard_pointsRepository extends JpaRepository<Flashcard_poin
     Integer calculateUserPoints(Long appuser, Long catId, Long diffId);
     @Transactional
     @Modifying
-    @Query("UPDATE Flashcard_points flash SET flash.point = 1 WHERE " +
+    @Query("UPDATE Flashcard_points flash SET flash.point = 1, flash.discovered = 'yes'  WHERE " +
             "flash.appuser.id = ?1 AND flash.flashcards.id = ?2")
     void updateFlashcardPoints(Long appuser, Long flashcards);
-
+    @Transactional
+    @Modifying
+    @Query("UPDATE Flashcard_points flash SET flash.discovered = 'yes' WHERE " +
+            "flash.appuser.id = ?1 AND flash.flashcards.id = ?2")
+    void updateFlashcardPointsField(Long appuser, Long flashcards);
     @Transactional
     @Modifying
     @Query("DELETE FROM Flashcard_points fp WHERE fp.appuser.id = ?1")
     void deleteFlashcardPointsByUser_id(Long id);
+
+    Long countByAppuserAndDiscovered(Long id, String discovered);
+    @Query("SELECT count(fp) FROM Flashcard_points fp, fp.category fc WHERE fp.discovered = ?1 AND fp.category.id =fc.id and fc.id =?2")
+    Long countByDiscoveredAndCategory(String found, Long catId);
+
 }

@@ -3,12 +3,14 @@ import java.util.*;
 
 import com.google.gson.Gson;
 import com.project.flashcards.Repository.*;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -119,33 +121,9 @@ private TimeStatsRepository timeStatsRepository;
         this.achievementRepository = achievementRepository;
     }
 
-    @GetMapping("/statistics")
-    public ResponseEntity<?> getStatForUser(@RequestParam Long id) {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        List<LinkedHashMap<String, String>> lista = new ArrayList<>();
-        LinkedHashMap<String, String> temp = new LinkedHashMap<>();
-        temp.put("user",appuserRepository.namesurname(id));
-        temp.put("login nr",String.valueOf(timeStatsRepository.getCountLogin(id)));
-        lista.add(temp);
-        if (!appuserRepository.existsById(id)) {
-            return new ResponseEntity<>(gson.toJson("Data not found"), responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
-        } else {
-            Iterator it = statisticsRepository.findAllByUser(id).iterator();
-            while (it.hasNext()) {
-                Object[] obj = (Object[]) it.next();
-                LinkedHashMap<String, String> data = new LinkedHashMap<>();
-                data.put("category", String.valueOf(obj[0]));
-                data.put("difficulty", String.valueOf(obj[1]));
-                data.put("score", String.valueOf(obj[2]));
-               data.put("total", String.valueOf(obj[3]));
-                lista.add(data);
-            }
-            return new ResponseEntity<>(lista, HttpStatus.OK);
-        }
-    }
 
     @PutMapping("/account/{id}")
+    @ApiOperation(value = "Requires user id")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody Appuser appuser) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -164,6 +142,7 @@ private TimeStatsRepository timeStatsRepository;
     }
 
     @DeleteMapping("/account/{id}")
+    @ApiOperation(value = "Require user id")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -180,6 +159,7 @@ private TimeStatsRepository timeStatsRepository;
     }
 
     @PostMapping("/flashcard")
+    @ApiOperation(value = "Requires id, categoryName, difficultyName")
     public ResponseEntity<?> createQuiz(@RequestBody FlashcardInitializer flashcardInitializer) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -201,7 +181,7 @@ if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
            List<Flashcards> flashcardPoints = flashcards.findBySelectedOptions(flashcardInitializer.getCategoryName(),
                    flashcardInitializer.getDifficultyName());
   for (Flashcards f : flashcardPoints) {
-        Flashcard_points flashcard_points = new Flashcard_points(user, f, 0);
+        Flashcard_points flashcard_points = new Flashcard_points(user, f, 0, "no");
         if (!Objects.isNull(f))
             flashcardPointsRepository.save(flashcard_points);
     }
@@ -210,8 +190,14 @@ if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
            return new ResponseEntity<>(flashcardPoints, responseHeaders, HttpStatus.OK);
        }
     }
+  @PutMapping("/discovered")
+  @ApiOperation(value = "Requires apuserId, flashcardsId, discovered=yes")
+  public void updateFlashcardPointField(@RequestBody StatisticsHelperComponent statisticsHelperComponent){
+      flashcardPointsRepository.updateFlashcardPoints(statisticsHelperComponent.getApuserId(), statisticsHelperComponent.getFlashcardsId());
+  }
 
     @PutMapping("/flashcard")
+    @ApiOperation(value = "Requires apuserId, flashcardsId")
     public ResponseEntity<?> updateStat(@RequestBody StatisticsHelperComponent statisticsHelperComponent) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -248,6 +234,7 @@ if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
     }
 
     @PostMapping("/favouriteflashcard")
+    @ApiOperation(value = "Requires apuserId, flashcardsId")
     public ResponseEntity<?> saveFlashcard(@RequestBody StatisticsHelperComponent statisticsHelperComponent) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -273,6 +260,7 @@ if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
     }
 
     @DeleteMapping("/favouriteflashcard")
+    @ApiOperation(value = "Requires apuserId, flashcardsId ")
     public ResponseEntity<?> deleteFlashcard(@RequestBody StatisticsHelperComponent statisticsHelperComponent) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -289,6 +277,7 @@ if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
     }
 
     @GetMapping("/favouriteflashcard/{id}")
+    @ApiOperation(value = "Returns flashcard_id,question, answer, category, difficulty")
     public List<LinkedHashMap<String, String>> getAllFlashcards(@PathVariable("id") Long id) {
         List<LinkedHashMap<String, String>> lista = new ArrayList<>();
         Iterator newit = favouriteFlashcardsRepository.getAllFlashcards(id).iterator();
