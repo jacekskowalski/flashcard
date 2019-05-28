@@ -12,4 +12,4 @@ Thanks to Swagger API  all endpoints are documented. Just run app on http://loca
 This web app uses Sengrid Web API to reset password. A link is sent on an email.
 
 <h1>Basic token auth</h1>
-During logging jwt token iis generated.
+During logging jwt token is generated.
