@@ -10,17 +10,17 @@ public class Results implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Long id;
+  private   Long id;
     @ManyToOne
     @JoinColumn(name = "apuserId")
-    Appuser appuser;
-    double totaltime;
+  private   Appuser appuser;
+   private double totaltime;
      @ManyToOne
     @JoinColumn(name = "category_id")
-    Category category;
+  private   Category category;
     @ManyToOne
     @JoinColumn(name = "difficulty_id")
-    Difficulty difficulty;
+  private   Difficulty difficulty;
 @ManyToOne
 @JoinColumn(name = "flashcard_id")
 Flashcards flashcards;

@@ -9,12 +9,12 @@ import javax.transaction.Transactional;
 
 @Repository
 public interface ResultRepository extends JpaRepository<Results, Long> {
-    @Query("SELECT SUM(r.time) FROM Results r WHERE r.appuser.id = ?1 AND r.category =?2")
+    @Query("SELECT SUM(r.totaltime) FROM Results r WHERE r.appuser.id = ?1 AND r.category =?2")
     Double getTimeForCompletedCourse(Long userID, Long categoryId);
-    @Query("SELECT SUM(r.time) FROM Results r WHERE r.appuser.id = ?1")
+    @Query("SELECT SUM(r.totaltime) FROM Results r WHERE r.appuser.id = ?1")
     Double getTimeForCompletedCourses(Long userID);
     @Transactional
     @Modifying
-    @Query("DELETE FROM Results t WHERE t.apuser.id = ?1")
+    @Query("DELETE FROM Results t WHERE t.appuser.id = ?1")
     void deleteResultsBy(Long id);
 }
