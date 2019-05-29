@@ -38,6 +38,8 @@ private TimeStatsRepository timeStatsRepository;
     private FavouriteFlashcardsRepository favouriteFlashcardsRepository;
     @Autowired
     private AchievementRepository achievementRepository;
+    @Autowired
+     private ResultRepository resultRepository;
 
     Gson gson = new Gson();
 
@@ -149,6 +151,7 @@ private TimeStatsRepository timeStatsRepository;
         if (id == 0 || id == null) {
             return new ResponseEntity<>(gson.toJson("Account not found"), HttpStatus.UNPROCESSABLE_ENTITY);
         } else {
+            resultRepository.deleteResultsBy(id);
             timeStatsRepository.deleteTimeStatsByUserId(id);
             appuserAchievementRepository.deleteByUser_id(id);
             flashcardPointsRepository.deleteFlashcardPointsByUser_id(id);
@@ -303,4 +306,11 @@ if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
         }
     }
 
- }
+    public ResultRepository getResultRepository() {
+        return resultRepository;
+    }
+
+    public void setResultRepository(ResultRepository resultRepository) {
+        this.resultRepository = resultRepository;
+    }
+}

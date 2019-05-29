@@ -16,7 +16,7 @@ public class CustomFilter   {
     public FilterRegistrationBean<AuthFilter> filterRegistrationBean() {
         FilterRegistrationBean<AuthFilter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setFilter(authFilter);
-        filterRegistrationBean.addUrlPatterns("/flashcard","/achievement/*","/statistics","/favouriteflashcard","/favouriteflashcard/*","/account/*");
+        filterRegistrationBean.addUrlPatterns("/flashcard","/achievement/*","/statistics","/favouriteflashcard","/favouriteflashcard/*","/account/*","/discovered");
         return filterRegistrationBean;
     }
 
