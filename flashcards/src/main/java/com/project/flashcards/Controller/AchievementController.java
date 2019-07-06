@@ -86,25 +86,25 @@ public class AchievementController {
              createAchievement(id, "Dobre początki");
         }else if( userScore == 100){
             createAchievement(id, "Tauzen");
-        }else if(userScore == 1000){
+        }else if(userScore == 500){
             createAchievement(id, "Ważny krok");
         }
         int jsscore = statisticsRepository.calculateJSUserPoints(id).intValue();
-        if(jsscore == 1000) {
+        if(jsscore == 50) {
             createAchievement(id,"Adept JavaScript") ;
-        }else if(jsscore == 5000){
+        }else if(jsscore == 150){
             createAchievement(id,"Mistrz JavaScript");
         }
         int htmlscore = statisticsRepository.calculateHtmlUserPoints(id).intValue();
-        if(htmlscore == 1000) {
+        if(htmlscore == 50) {
             createAchievement(id,"Adept HTML5");
-                 }else if(htmlscore == 5000){
+                 }else if(htmlscore == 150){
            createAchievement(id,"Mistrz HTML5");
                   }
         int cssscore = statisticsRepository.calculateCssUserPoints(id).intValue();
-        if(cssscore == 1000) {
+        if(cssscore == 50) {
             createAchievement(id,"Adept CSS3");
-                    }else if(cssscore == 5000){
+                    }else if(cssscore == 150){
             createAchievement(id,"Mistrz CSS3");
         }
 
