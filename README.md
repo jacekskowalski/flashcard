@@ -9,7 +9,7 @@ It`s being developed. Current language version is polish.
 Thanks to Swagger API  all endpoints are documented. Just run app on http://localhost:8080/swagger-ui.html
 
 <h1>Sendgrid API</h1>
-This web app uses Sengrid Web API to reset password. A link is sent on an email.
+This web app uses Sengrid Web API to reset password. A link is sent on an email. Insert your api key in application.properties file
 
 <h1>Basic token auth</h1>
 During logging jwt token is generated.
