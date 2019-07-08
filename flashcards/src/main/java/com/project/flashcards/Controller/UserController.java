@@ -151,6 +151,7 @@ private TimeStatsRepository timeStatsRepository;
         if (id == 0 || id == null) {
             return new ResponseEntity<>(gson.toJson("Account not found"), HttpStatus.UNPROCESSABLE_ENTITY);
         } else {
+            favouriteFlashcardsRepository.deleteByUser_id(id);
             resultRepository.deleteResultsBy(id);
             timeStatsRepository.deleteTimeStatsByUserId(id);
             appuserAchievementRepository.deleteByUser_id(id);
@@ -170,12 +171,12 @@ private TimeStatsRepository timeStatsRepository;
                 flashcardInitializer.getCategoryName(),flashcardInitializer.getDifficultyName()))){
             return new ResponseEntity<>(gson.toJson("Data exists"),responseHeaders, HttpStatus.FORBIDDEN);
         }
-if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
+        if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
         Objects.isNull(difficultyRepository.findByName(flashcardInitializer.getDifficultyName())) ||
         Objects.isNull(categoryRepository.findByName(flashcardInitializer.getCategoryName()))){
-    return new ResponseEntity<>(gson.toJson("Data not found"), responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
+         return new ResponseEntity<>(gson.toJson("Data not found"), responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
         }
-      else {
+       else {
            Optional<Appuser> appuser = appuserRepository.findById(flashcardInitializer.getId());
            Appuser user = appuser.get();
            Difficulty difficulty = difficultyRepository.findByName(flashcardInitializer.getDifficultyName());
@@ -183,12 +184,12 @@ if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
            Statistics newstatistics = new Statistics(user, 0, category, difficulty);
            List<Flashcards> flashcardPoints = flashcards.findBySelectedOptions(flashcardInitializer.getCategoryName(),
                    flashcardInitializer.getDifficultyName());
-  for (Flashcards f : flashcardPoints) {
-        Flashcard_points flashcard_points = new Flashcard_points(user, f, 0, "no");
+          for (Flashcards f : flashcardPoints) {
+         Flashcard_points flashcard_points = new Flashcard_points(user, f, 0, "no");
         if (!Objects.isNull(f))
             flashcardPointsRepository.save(flashcard_points);
-    }
-    statisticsRepository.save(newstatistics);
+        }
+           statisticsRepository.save(newstatistics);
 
            return new ResponseEntity<>(flashcardPoints, responseHeaders, HttpStatus.OK);
        }
@@ -196,7 +197,9 @@ if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
   @PutMapping("/discovered")
   @ApiOperation(value = "Requires apuserId, flashcardsId, discovered=yes")
   public void updateFlashcardPointField(@RequestBody StatisticsHelperComponent statisticsHelperComponent){
-      flashcardPointsRepository.updateFlashcardPoints(statisticsHelperComponent.getApuserId(), statisticsHelperComponent.getFlashcardsId());
+              flashcardPointsRepository
+              .updateFlashcardPointsField(statisticsHelperComponent.getApuserId(),
+               statisticsHelperComponent.getFlashcardsId());
   }
 
     @PutMapping("/flashcard")
@@ -209,18 +212,19 @@ if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
             return new ResponseEntity<>(gson.toJson("Data not found"), responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         int result;
-        flashcardPointsRepository.updateFlashcardPoints(statisticsHelperComponent.getApuserId(), statisticsHelperComponent.getFlashcardsId());
-        createAchievement(statisticsHelperComponent.getApuserId(),"Chrzest");
-        Long difficultyId = flashcards.getDifficultyId(statisticsHelperComponent.getFlashcardsId());
+        flashcardPointsRepository.updateFlashcardPoints(statisticsHelperComponent.getApuserId(),
+        statisticsHelperComponent.getFlashcardsId());
+              Long difficultyId = flashcards.getDifficultyId(statisticsHelperComponent.getFlashcardsId());
         Long categoryId = flashcards.getCategoryId(statisticsHelperComponent.getFlashcardsId());
         result = flashcardPointsRepository.calculateUserPoints(statisticsHelperComponent.getApuserId(),
                 categoryId, difficultyId);
         if ( result ==0 ){
                 statisticsRepository.updateStatistics(result, statisticsHelperComponent.getApuserId(), categoryId, difficultyId);
+            createAchievement(statisticsHelperComponent.getApuserId(),"Chrzest");
                   return new ResponseEntity<>(responseHeaders, HttpStatus.OK);
         } else {
             statisticsRepository.updateStatistics(result, statisticsHelperComponent.getApuserId(), categoryId, difficultyId);
-            int userScore = statisticsRepository.calculateTotalUserPoints(statisticsHelperComponent.getApuserId()).intValue();
+            long userScore = statisticsRepository.calculateTotalUserPoints(statisticsHelperComponent.getApuserId()).longValue();
             Optional<Appuser> getappuser=  appuserRepository.findById(statisticsHelperComponent.getApuserId());
             Appuser newappuser = getappuser.get();
             LinkedHashMap<String, Integer> data = new LinkedHashMap<>();
@@ -297,7 +301,7 @@ if(! appuserRepository.findById(flashcardInitializer.getId()).isPresent() ||
         return lista;
     }
     public void createAchievement(Long id, String name){
-        if(appuserAchievementRepository.findByIds(id,name).isEmpty()){
+        if(Objects.isNull(appuserAchievementRepository.findByIds(id,name))){
             Optional<Appuser> getappuser=  appuserRepository.findById(id);
             Appuser appuser = getappuser.get();
             Achievement achievement = achievementRepository.findAchievementByName(name);

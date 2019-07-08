@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 public class ResultHelperComponent {
 
    private Long apuserId;
-   private   double time;
+   private double time;
    private String categoryName;
    private String diificultyName;
    private Long flashcardId;
@@ -15,6 +15,14 @@ public class ResultHelperComponent {
     }
 
     public ResultHelperComponent(double time, String categoryName, String diificultyName, Long flashcardId) {
+        this.time = time;
+        this.categoryName = categoryName;
+        this.diificultyName = diificultyName;
+        this.flashcardId = flashcardId;
+    }
+
+    public ResultHelperComponent(Long apuserId, double time, String categoryName, String diificultyName, Long flashcardId) {
+        this.apuserId = apuserId;
         this.time = time;
         this.categoryName = categoryName;
         this.diificultyName = diificultyName;
@@ -60,4 +68,6 @@ public class ResultHelperComponent {
     public void setDiificultyName(String diificultyName) {
         this.diificultyName = diificultyName;
     }
+
+
 }

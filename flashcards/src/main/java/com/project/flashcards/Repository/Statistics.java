@@ -16,9 +16,9 @@ private Long id;
 private Appuser user_id;
 //@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 private int points;
-    @ManyToOne
-    @JoinColumn(name="category_id")
-    private Category category;
+@ManyToOne
+@JoinColumn(name="category_id")
+private Category category;
 @ManyToOne
 @JoinColumn(name = "difficulty_id")
 private Difficulty difficulty;

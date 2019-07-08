@@ -9,23 +9,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.xml.transform.Result;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @RestController
 @CrossOrigin
 public class AchievementController {
+    Gson gson = new Gson();
     @Autowired
     private StatisticsRepository statisticsRepository;
     @Autowired
     private AppuserRepository appuserRepository;
     @Autowired
-    private  AppuserAchievementRepository appuserAchievementRepository;
+    private AppuserAchievementRepository appuserAchievementRepository;
      @Autowired
     private FavouriteFlashcardsRepository favouriteFlashcardsRepository;
     @Autowired
@@ -34,7 +32,10 @@ public class AchievementController {
     private DifficultyRepository difficultyRepository;
     @Autowired
     private CategoryRepository categoryRepository;
-    Gson gson = new Gson();
+    @Autowired
+    private FlashcardRepository flashcardRepository;
+    @Autowired
+    private ResultRepository resultRepository;
 
     public StatisticsRepository getStatisticsRepository() {
         return statisticsRepository;
@@ -79,102 +80,96 @@ public class AchievementController {
     @GetMapping("/achievement/{id}")
     @ApiOperation(value = "Returns all user achievements")
         public List<String> getAllAchievements(@PathVariable("id") Long id){
-        Optional<Appuser> getappuser=  appuserRepository.findById(id);
-        Appuser newappuser = getappuser.get();
+
         int userScore = statisticsRepository.calculateTotalUserPoints(id).intValue();
-        if(userScore == 20) {
+        if(userScore  >= 20) {
              createAchievement(id, "Dobre początki");
-        }else if( userScore == 100){
+        }
+        if( userScore >= 100){
             createAchievement(id, "Tauzen");
-        }else if(userScore == 500){
+        }
+        if(userScore >= 500){
             createAchievement(id, "Ważny krok");
         }
         int jsscore = statisticsRepository.calculateJSUserPoints(id).intValue();
-        if(jsscore == 50) {
+        if(jsscore >= 50) {
             createAchievement(id,"Adept JavaScript") ;
-        }else if(jsscore == 150){
+        }
+        if(jsscore >= 150){
             createAchievement(id,"Mistrz JavaScript");
         }
         int htmlscore = statisticsRepository.calculateHtmlUserPoints(id).intValue();
-        if(htmlscore == 50) {
+        if(htmlscore >= 50) {
             createAchievement(id,"Adept HTML5");
-                 }else if(htmlscore == 150){
+                 }
+         if(htmlscore >= 150){
            createAchievement(id,"Mistrz HTML5");
                   }
         int cssscore = statisticsRepository.calculateCssUserPoints(id).intValue();
-        if(cssscore == 50) {
+        if(cssscore >= 50) {
             createAchievement(id,"Adept CSS3");
-                    }else if(cssscore == 150){
+                    }
+        if(cssscore >= 150){
             createAchievement(id,"Mistrz CSS3");
         }
-
-        Iterator it = statisticsRepository.completed(id).iterator();
-        while (it.hasNext()) {
-            Object[] obj = (Object[]) it.next();
-
-            if(String.valueOf(obj[1]).equalsIgnoreCase("HTML5")){
-               if(String.valueOf(obj[2]).equalsIgnoreCase("Początkujący")){
-                  createAchievement(id,"Hyperstart");
-                       }else if(String.valueOf(obj[2]).equalsIgnoreCase("Średniozaawansowany")){
-                   createAchievement(id,"Coraz lepiej");
-               }else if(String.valueOf(obj[2]).equalsIgnoreCase("Zaawansowany")){
-                   createAchievement(id,"Mistrz znaczników");
-               }
-            }else if(String.valueOf(obj[1]).equalsIgnoreCase("CSS3")){
-                if(String.valueOf(obj[2]).equalsIgnoreCase("Początkujący")){
-                    createAchievement(id,"Stylowy start");
-                }else if(String.valueOf(obj[2]).equalsIgnoreCase("Średniozaawansowany")){
-                    createAchievement(id,"Oby tak dalej");
-                }else if(String.valueOf(obj[2]).equalsIgnoreCase("Zaawansowany")){
-                    createAchievement(id,"Czarodziej");
-                }
-            }else if(String.valueOf(obj[1]).equalsIgnoreCase("JavaScript")){
-                if(String.valueOf(obj[2]).equalsIgnoreCase("Początkujący")){
-                    createAchievement(id,"Skryptowy start");
-                }else if(String.valueOf(obj[2]).equalsIgnoreCase("Średniozaawansowany")){
-                    createAchievement(id,"Nie przestawaj");
-                }else if(String.valueOf(obj[2]).equalsIgnoreCase("Zaawansowany")){
-                    createAchievement(id,"Świat jest twój");
-                }
-            }
-        }
-         return appuserAchievementRepository.findAllByUser_id(id);
+           return appuserAchievementRepository.findAllByUser_id(id);
     }
-/*
+
     @PostMapping("/achievement")
-    @ApiOperation(value = "")
+    @ApiOperation(value = "Called after the last answer in a quiz")
     public  ResponseEntity<?> result(@RequestBody ResultHelperComponent result) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
         if (Objects.isNull(result))
             return new ResponseEntity<>(gson.toJson("Data not found"), responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
         else {
-            Long getcategoryId = categoryRepository.getCategoryId(result.getCategoryName());
-            Long getdifficultyId = difficultyRepository.getDifficultyId(result.getDiificultyName());
             Appuser app= appuserRepository.findById(result.getApuserId()).get();
             Difficulty diff= difficultyRepository.findByName(result.getDiificultyName());
             Category cat= categoryRepository.findByName(result.getCategoryName());
-         //   Results newresult = new Results(app, result.getTime(), cat, diff, );
+            Flashcards flashcards = flashcardRepository.findById(result.getFlashcardId()).get();
+            Results newresult = new Results(app, result.getTime(), cat, diff,flashcards);
+            resultRepository.save(newresult);
 
+                if(String.valueOf(result.getCategoryName()).equalsIgnoreCase("HTML5")){
+                    if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Początkujący")){
+                        createAchievement(result.getFlashcardId(),"Hyperstart");
+                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Średniozaawansowany")){
+                        createAchievement(result.getFlashcardId(),"Coraz lepiej");
+                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Zaawansowany")){
+                        createAchievement(result.getFlashcardId(),"Mistrz znaczników");
+                    }
+                }else if(String.valueOf(result.getCategoryName()).equalsIgnoreCase("CSS3")){
+                    if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Początkujący")){
+                        createAchievement(result.getFlashcardId(),"Stylowy start");
+                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Średniozaawansowany")){
+                        createAchievement(result.getFlashcardId(),"Oby tak dalej");
+                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Zaawansowany")){
+                        createAchievement(result.getFlashcardId(),"Czarodziej");
+                    }
+                }else if(String.valueOf(result.getCategoryName()).equalsIgnoreCase("JavaScript")){
+                    if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Początkujący")){
+                        createAchievement(result.getFlashcardId(),"Skryptowy start");
+                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Średniozaawansowany")){
+                        createAchievement(result.getFlashcardId(),"Nie przestawaj");
+                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Zaawansowany")){
+                        createAchievement(result.getFlashcardId(),"Świat jest twój");
+                    }
+                }
+            }
+           return new ResponseEntity<>(gson.toJson("result sent"), responseHeaders, HttpStatus.OK);
+       }
 
-
-        return new ResponseEntity<>(gson.toJson("result sent"), responseHeaders, HttpStatus.OK);
-    }
-    }
-*/
     public void createAchievement(Long apuserId, String name){
-
-             if(appuserAchievementRepository.findByIds(apuserId,name).isEmpty()){
-          Optional<Appuser> getappuser=  appuserRepository.findById(apuserId);
+        if(Objects.isNull(appuserAchievementRepository.findByIds(apuserId,name))){
+            Optional<Appuser> getappuser=  appuserRepository.findById(apuserId);
             Appuser newappuser = getappuser.get();
             Achievement achievement = achievementRepository.findAchievementByName(name);
             AppuserAchievement appuserAchievement= new AppuserAchievement(newappuser, achievement);
             appuserAchievementRepository.save(appuserAchievement);
-                   }
+        }
     }
 
-
-    public DifficultyRepository getDifficultyRepository() {
+      public DifficultyRepository getDifficultyRepository() {
         return difficultyRepository;
     }
 
@@ -188,5 +183,21 @@ public class AchievementController {
 
     public void setCategoryRepository(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
+    }
+
+    public FlashcardRepository getFlashcardRepository() {
+        return flashcardRepository;
+    }
+
+    public void setFlashcardRepository(FlashcardRepository flashcardRepository) {
+        this.flashcardRepository = flashcardRepository;
+    }
+
+    public ResultRepository getResultRepository() {
+        return resultRepository;
+    }
+
+    public void setResultRepository(ResultRepository resultRepository) {
+        this.resultRepository = resultRepository;
     }
 }

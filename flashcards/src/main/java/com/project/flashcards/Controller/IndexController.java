@@ -41,7 +41,7 @@ private String apiKey;
     public AppuserRepository getAppuserRepository() {
         return appuserRepository;
     }
-Gson gson =new Gson();
+    Gson gson =new Gson();
 
     public void setAppuserRepository(AppuserRepository appuserRepository) {
         this.appuserRepository = appuserRepository;
@@ -68,10 +68,10 @@ Gson gson =new Gson();
     }
 
 
-@PostMapping("/remember")
-@ApiOperation(value = "Requires email string and returns link to reset password")
-public ResponseEntity<?> remember(@RequestBody Map<String,String> email) throws IOException{
-Appuser getpswd= appuserRepository.findAppuserByEmail(email.get("email"));
+    @PostMapping("/remember")
+    @ApiOperation(value = "Requires email string and returns link to reset password")
+    public ResponseEntity<?> remember(@RequestBody Map<String,String> email) throws IOException{
+    Appuser getpswd= appuserRepository.findAppuserByEmail(email.get("email"));
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.APPLICATION_JSON);
     if(Objects.isNull(getpswd)){
@@ -90,7 +90,9 @@ Appuser getpswd= appuserRepository.findAppuserByEmail(email.get("email"));
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
             Response response = sg.api(request);
-
+            System.out.println(response.getStatusCode());
+            System.out.println(response.getBody());
+            System.out.println(response.getHeaders());
         } catch (IOException ex) {
             throw ex;
         }
@@ -110,19 +112,17 @@ Appuser getpswd= appuserRepository.findAppuserByEmail(email.get("email"));
             appuser.setName_surname(user.getName_surname());
             appuser.setEmail(user.getEmail());
             appuser.setPswd(BCrypt.hashpw(user.getPswd(), BCrypt.gensalt(12)));
-           appuserRepository.save(appuser);
-                  TimeStats timeStats=new TimeStats(0,appuser);
-                  timeStatsRepository.save(timeStats);
+            appuserRepository.save(appuser);
+            TimeStats timeStats=new TimeStats(0,appuser);
+            timeStatsRepository.save(timeStats);
             return new ResponseEntity<>(gson.toJson("Account created"),responseHeaders, HttpStatus.OK);
         }
            }
 
 
-
-
-@PutMapping("/reset")
-@ApiOperation(value = "Requires email, pswd")
-public ResponseEntity<?> changePassword(@RequestBody Appuser appuser_email){
+    @PutMapping("/reset")
+    @ApiOperation(value = "Requires email, pswd")
+    public ResponseEntity<?> changePassword(@RequestBody Appuser appuser_email){
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.APPLICATION_JSON);
         if(Objects.isNull(appuser_email))
@@ -137,8 +137,8 @@ public ResponseEntity<?> changePassword(@RequestBody Appuser appuser_email){
 }
 }
 
-@PostMapping("/login")
-@ApiOperation(value = "Requires email, pswd")
+    @PostMapping("/login")
+    @ApiOperation(value = "Requires email, pswd")
     public ResponseEntity<?> login(@RequestBody Appuser appuser) {
 
         String getPswd = appuserRepository.findPswd(appuser.getEmail());
@@ -146,8 +146,8 @@ public ResponseEntity<?> changePassword(@RequestBody Appuser appuser_email){
         {
             return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }else {
-Appuser appu= appuserRepository.findAppuserByEmail(appuser.getEmail());
-timeStatsRepository.loginCounter(appuser.getEmail());
+         Appuser appu= appuserRepository.findAppuserByEmail(appuser.getEmail());
+         timeStatsRepository.loginCounter(appuser.getEmail());
             return new ResponseEntity<>(
                     new UserToken(Jwts.builder().setSubject(appu.getEmail()).claim("roles", "user")
                             .setIssuedAt(new Date()).signWith(SignatureAlgorithm.HS256, "123#&*zcvAWEE999").compact(),

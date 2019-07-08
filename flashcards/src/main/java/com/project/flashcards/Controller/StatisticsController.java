@@ -47,6 +47,7 @@ public class StatisticsController {
             Double timeForHtmlCouse = resultRepository.getTimeForCompletedCourse(id, 1L);
             Double timeForCssCouse = resultRepository.getTimeForCompletedCourse(id, 2L);
             Double timeForJSCouse = resultRepository.getTimeForCompletedCourse(id, 3L);
+            int coursesCompleted = resultRepository.countResultsByAppuser(id).intValue();
             Long countAllDiscovered = flashcardPointsRepository.countByAppuserAndDiscovered(id, "yes");
             Long countDiscoveredHtml = flashcardPointsRepository.countByDiscoveredAndCategory("yes", 1L);
             Long countDiscoveredCss = flashcardPointsRepository.countByDiscoveredAndCategory("yes", 2L);
@@ -60,6 +61,7 @@ public class StatisticsController {
             temp.put("completed css course", String.valueOf(timeForCssCouse));
             temp.put("completed js course", String.valueOf(timeForJSCouse));
             temp.put("login nr",String.valueOf(timeStatsRepository.getCountLogin(id)));
+            temp.put("courses completed", String.valueOf(coursesCompleted));
             Iterator it = statisticsRepository.findAllByUser(id).iterator();
             while (it.hasNext()) {
                 Object[] obj = (Object[]) it.next();
