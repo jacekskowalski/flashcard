@@ -218,7 +218,7 @@ private TimeStatsRepository timeStatsRepository;
         Long categoryId = flashcards.getCategoryId(statisticsHelperComponent.getFlashcardsId());
         result = flashcardPointsRepository.calculateUserPoints(statisticsHelperComponent.getApuserId(),
                 categoryId, difficultyId);
-        if ( result ==0 ){
+        if ( result ==1 ){
                 statisticsRepository.updateStatistics(result, statisticsHelperComponent.getApuserId(), categoryId, difficultyId);
             createAchievement(statisticsHelperComponent.getApuserId(),"Chrzest");
                   return new ResponseEntity<>(responseHeaders, HttpStatus.OK);

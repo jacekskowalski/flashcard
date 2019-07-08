@@ -26,7 +26,7 @@ import java.util.Objects;
 @CrossOrigin
 @RestController
 public class IndexController {
-@Value("${spring.sendgrid.api-key}")
+//@Value("${spring.sendgrid.api-key}")
 private String apiKey="";
     Appuser appuser;
     @Autowired

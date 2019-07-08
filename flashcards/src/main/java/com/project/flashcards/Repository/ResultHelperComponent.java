@@ -14,13 +14,6 @@ public class ResultHelperComponent {
     public ResultHelperComponent() {
     }
 
-    public ResultHelperComponent(double time, String categoryName, String diificultyName, Long flashcardId) {
-        this.time = time;
-        this.categoryName = categoryName;
-        this.diificultyName = diificultyName;
-        this.flashcardId = flashcardId;
-    }
-
     public ResultHelperComponent(Long apuserId, double time, String categoryName, String diificultyName, Long flashcardId) {
         this.apuserId = apuserId;
         this.time = time;

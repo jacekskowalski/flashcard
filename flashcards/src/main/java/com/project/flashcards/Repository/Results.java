@@ -10,7 +10,7 @@ public class Results implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-  private   Long id;
+  private  Long id;
     @ManyToOne
     @JoinColumn(name = "apuserId")
   private   Appuser appuser;
@@ -74,4 +74,6 @@ Flashcards flashcards;
     public void setFlashcards(Flashcards flashcards) {
         this.flashcards = flashcards;
     }
+
+
 }

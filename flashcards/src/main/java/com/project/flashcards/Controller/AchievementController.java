@@ -120,6 +120,7 @@ public class AchievementController {
     public  ResponseEntity<?> result(@RequestBody ResultHelperComponent result) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+
         if (Objects.isNull(result))
             return new ResponseEntity<>(gson.toJson("Data not found"), responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
         else {
@@ -132,31 +133,31 @@ public class AchievementController {
 
                 if(String.valueOf(result.getCategoryName()).equalsIgnoreCase("HTML5")){
                     if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Początkujący")){
-                        createAchievement(result.getFlashcardId(),"Hyperstart");
+                        createAchievement(result.getApuserId(),"Hyperstart");
                     }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Średniozaawansowany")){
-                        createAchievement(result.getFlashcardId(),"Coraz lepiej");
+                        createAchievement(result.getApuserId(),"Coraz lepiej");
                     }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Zaawansowany")){
-                        createAchievement(result.getFlashcardId(),"Mistrz znaczników");
+                        createAchievement(result.getApuserId(),"Mistrz znaczników");
                     }
                 }else if(String.valueOf(result.getCategoryName()).equalsIgnoreCase("CSS3")){
                     if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Początkujący")){
-                        createAchievement(result.getFlashcardId(),"Stylowy start");
+                        createAchievement(result.getApuserId(),"Stylowy start");
                     }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Średniozaawansowany")){
-                        createAchievement(result.getFlashcardId(),"Oby tak dalej");
+                        createAchievement(result.getApuserId(),"Oby tak dalej");
                     }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Zaawansowany")){
-                        createAchievement(result.getFlashcardId(),"Czarodziej");
+                        createAchievement(result.getApuserId(),"Czarodziej");
                     }
                 }else if(String.valueOf(result.getCategoryName()).equalsIgnoreCase("JavaScript")){
                     if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Początkujący")){
-                        createAchievement(result.getFlashcardId(),"Skryptowy start");
+                        createAchievement(result.getApuserId(),"Skryptowy start");
                     }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Średniozaawansowany")){
-                        createAchievement(result.getFlashcardId(),"Nie przestawaj");
+                        createAchievement(result.getApuserId(),"Nie przestawaj");
                     }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Zaawansowany")){
-                        createAchievement(result.getFlashcardId(),"Świat jest twój");
+                        createAchievement(result.getApuserId(),"Świat jest twój");
                     }
                 }
             }
-           return new ResponseEntity<>(gson.toJson("result sent"), responseHeaders, HttpStatus.OK);
+       return new ResponseEntity<>(gson.toJson("result sent"), responseHeaders, HttpStatus.OK);
        }
 
     public void createAchievement(Long apuserId, String name){
