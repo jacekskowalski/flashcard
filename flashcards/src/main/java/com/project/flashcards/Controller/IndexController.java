@@ -27,7 +27,7 @@ import java.util.Objects;
 @RestController
 public class IndexController {
 @Value("${spring.sendgrid.api-key}")
-private String apiKey;
+private String apiKey="";
     Appuser appuser;
     @Autowired
     private AppuserRepository appuserRepository;
@@ -155,29 +155,7 @@ private String apiKey;
                     HttpStatus.OK);
         }
     }
-/*
-            @Override
-            public Authentication authenticate(Authentication authentication) throws AuthenticationException, BadCredentialsException {
 
-              String name= "emalina@hotmail.com";
-
-             String password= "emalina6";
-                String getPswd = appuserRepository.findPswd(name).trim();
-            if (!appuserRepository.existsByEmail(name) || !bCryptPasswordEncoder.matches(password,getPswd))
-                {
-                    throw new BadCredentialsException("Not found");
-                }
-                newappuser(name);
-                    timeStatsRepository.loginCounter(name);
-                return new UsernamePasswordAuthenticationToken(name, password, new ArrayList<>());
-
-            }
-
-            @Override
-            public boolean supports(Class<?> aClass) {
-                return UsernamePasswordAuthenticationToken.class.isAssignableFrom(aClass);
-                  }
-*/
 public void newappuser(String email) {
     setAppuser(appuserRepository.findAppuserByEmail(email));
 }
