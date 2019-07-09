@@ -219,10 +219,8 @@ private TimeStatsRepository timeStatsRepository;
         result = flashcardPointsRepository.calculateUserPoints(statisticsHelperComponent.getApuserId(),
                 categoryId, difficultyId);
         if ( result ==1 ){
-                statisticsRepository.updateStatistics(result, statisticsHelperComponent.getApuserId(), categoryId, difficultyId);
-            createAchievement(statisticsHelperComponent.getApuserId(),"Chrzest");
-                  return new ResponseEntity<>(responseHeaders, HttpStatus.OK);
-        } else {
+               createAchievement(statisticsHelperComponent.getApuserId(),"Chrzest");
+        }
             statisticsRepository.updateStatistics(result, statisticsHelperComponent.getApuserId(), categoryId, difficultyId);
             long userScore = statisticsRepository.calculateTotalUserPoints(statisticsHelperComponent.getApuserId()).longValue();
             Optional<Appuser> getappuser=  appuserRepository.findById(statisticsHelperComponent.getApuserId());
@@ -235,10 +233,9 @@ private TimeStatsRepository timeStatsRepository;
                    AppuserAchievement appuserAchievement= new AppuserAchievement(newappuser,ids);
                    appuserAchievementRepository.save(appuserAchievement);
                }
+               updateAchievement(statisticsHelperComponent.getApuserId());
             return new ResponseEntity<>(gson.toJson(data),responseHeaders,HttpStatus.OK);
         }
-
-    }
 
     @PostMapping("/favouriteflashcard")
     @ApiOperation(value = "Requires apuserId, flashcardsId")
@@ -308,6 +305,43 @@ private TimeStatsRepository timeStatsRepository;
             AppuserAchievement appuserAchievement= new AppuserAchievement(appuser, achievement);
             appuserAchievementRepository.save(appuserAchievement);
         }
+    }
+
+    public void updateAchievement(Long id){
+        int userScore = statisticsRepository.calculateTotalUserPoints(id).intValue();
+
+        if(userScore  >= 20) {
+            createAchievement(id, "Dobre początki");
+        }
+        if( userScore >= 100){
+            createAchievement(id, "Tauzen");
+        }
+        if(userScore >= 500){
+            createAchievement(id, "Ważny krok");
+        }
+
+        int jsscore = statisticsRepository.calculateJSUserPoints(id).intValue();
+        if(jsscore >= 50) {
+            createAchievement(id,"Adept JavaScript") ;
+        }
+        if(jsscore >= 150){
+            createAchievement(id,"Mistrz JavaScript");
+        }
+        int htmlscore = statisticsRepository.calculateHtmlUserPoints(id).intValue();
+        if(htmlscore >= 50) {
+            createAchievement(id,"Adept HTML5");
+                 }
+         if(htmlscore >= 150){
+           createAchievement(id,"Mistrz HTML5");
+                  }
+        int cssscore = statisticsRepository.calculateCssUserPoints(id).intValue();
+        if(cssscore >= 50) {
+            createAchievement(id,"Adept CSS3");
+                    }
+        if(cssscore >= 150){
+            createAchievement(id,"Mistrz CSS3");
+        }
+
     }
 
     public ResultRepository getResultRepository() {

@@ -81,38 +81,7 @@ public class AchievementController {
     @ApiOperation(value = "Returns all user achievements")
         public List<String> getAllAchievements(@PathVariable("id") Long id){
 
-        int userScore = statisticsRepository.calculateTotalUserPoints(id).intValue();
-        if(userScore  >= 20) {
-             createAchievement(id, "Dobre początki");
-        }
-        if( userScore >= 100){
-            createAchievement(id, "Tauzen");
-        }
-        if(userScore >= 500){
-            createAchievement(id, "Ważny krok");
-        }
-        int jsscore = statisticsRepository.calculateJSUserPoints(id).intValue();
-        if(jsscore >= 50) {
-            createAchievement(id,"Adept JavaScript") ;
-        }
-        if(jsscore >= 150){
-            createAchievement(id,"Mistrz JavaScript");
-        }
-        int htmlscore = statisticsRepository.calculateHtmlUserPoints(id).intValue();
-        if(htmlscore >= 50) {
-            createAchievement(id,"Adept HTML5");
-                 }
-         if(htmlscore >= 150){
-           createAchievement(id,"Mistrz HTML5");
-                  }
-        int cssscore = statisticsRepository.calculateCssUserPoints(id).intValue();
-        if(cssscore >= 50) {
-            createAchievement(id,"Adept CSS3");
-                    }
-        if(cssscore >= 150){
-            createAchievement(id,"Mistrz CSS3");
-        }
-           return appuserAchievementRepository.findAllByUser_id(id);
+               return appuserAchievementRepository.findAllByUser_id(id);
     }
 
     @PostMapping("/achievement")

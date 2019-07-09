@@ -17,6 +17,6 @@ public interface ResultRepository extends JpaRepository<Results, Long> {
     @Modifying
     @Query("DELETE FROM Results t WHERE t.appuser.id = ?1")
     void deleteResultsBy(Long id);
-
-    Integer countResultsByAppuser(Long userId);
+@Query(value = "SELECT count(*) from Results r  WHERE r.apuser_id = ?1",nativeQuery = true)
+    Integer countResultsByAppuserId(Long userId);
 }

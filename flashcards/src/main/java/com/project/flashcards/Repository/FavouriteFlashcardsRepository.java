@@ -22,6 +22,8 @@ public interface FavouriteFlashcardsRepository extends JpaRepository<FavouriteFl
     @Modifying
     @Query("DELETE FROM FavouriteFlashcards ff WHERE ff.appuser.id =?1 AND ff.flashcards.id =?2")
    void deleteFlashcard(Long userId, Long flashcardId);
+    @Transactional
+    @Modifying
     @Query("DELETE FROM FavouriteFlashcards ff WHERE ff.appuser.id =?1")
     void deleteByUser_id(Long id);
 }

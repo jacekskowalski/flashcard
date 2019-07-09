@@ -26,9 +26,9 @@ public interface Flashcard_pointsRepository extends JpaRepository<Flashcard_poin
     @Modifying
     @Query("DELETE FROM Flashcard_points fp WHERE fp.appuser.id = ?1")
     void deleteFlashcardPointsByUser_id(Long id);
-
+@Query("SELECT COALESCE(COUNT(fp),0) FROM Flashcard_points fp WHERE fp.appuser.id =?1 AND fp.discovered = ?2")
     Long countByAppuserAndDiscovered(Long id, String discovered);
-    @Query("SELECT count(fp) FROM Flashcard_points fp   WHERE fp.discovered = ?1 AND fp.flashcards.category_id =?2")
+    @Query("SELECT COALESCE(COUNT(fp),0) FROM Flashcard_points fp WHERE fp.discovered = ?1 AND fp.flashcards.category_id.id =?2")
     Long countByDiscoveredAndCategory(String found, Long catId);
 
 }

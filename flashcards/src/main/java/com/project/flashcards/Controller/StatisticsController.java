@@ -29,6 +29,8 @@ public class StatisticsController {
     private AppuserRepository appuserRepository;
     @Autowired
     private TimeStatsRepository timeStatsRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
     Gson gson = new Gson();
 
     @GetMapping("/statistics")
@@ -47,7 +49,7 @@ public class StatisticsController {
             Double timeForHtmlCouse = resultRepository.getTimeForCompletedCourse(id, 1L);
             Double timeForCssCouse = resultRepository.getTimeForCompletedCourse(id, 2L);
             Double timeForJSCouse = resultRepository.getTimeForCompletedCourse(id, 3L);
-            int coursesCompleted = resultRepository.countResultsByAppuser(id).intValue();
+            int coursesCompleted = resultRepository.countResultsByAppuserId(id).intValue();
             Long countAllDiscovered = flashcardPointsRepository.countByAppuserAndDiscovered(id, "yes");
             Long countDiscoveredHtml = flashcardPointsRepository.countByDiscoveredAndCategory("yes", 1L);
             Long countDiscoveredCss = flashcardPointsRepository.countByDiscoveredAndCategory("yes", 2L);
@@ -56,11 +58,11 @@ public class StatisticsController {
             temp.put("nr of html discovered flashcards", String.valueOf(countDiscoveredHtml));
             temp.put("nr of css discovered flashcards", String.valueOf(countDiscoveredCss));
             temp.put("nr of js discovered flashcards", String.valueOf(countDiscoveredJs));
-            temp.put("completed all courses",String.valueOf(timeForAllCourses));
-            temp.put("completed html course",String.valueOf(timeForHtmlCouse));
-            temp.put("completed css course", String.valueOf(timeForCssCouse));
-            temp.put("completed js course", String.valueOf(timeForJSCouse));
-            temp.put("login nr",String.valueOf(timeStatsRepository.getCountLogin(id)));
+            temp.put("time of all courses",String.valueOf(timeForAllCourses));
+            temp.put("time of html course",String.valueOf(timeForHtmlCouse));
+            temp.put("time of css course", String.valueOf(timeForCssCouse));
+            temp.put("time of js course", String.valueOf(timeForJSCouse));
+            temp.put("number of login",String.valueOf(timeStatsRepository.getCountLogin(id)));
             temp.put("courses completed", String.valueOf(coursesCompleted));
             Iterator it = statisticsRepository.findAllByUser(id).iterator();
             while (it.hasNext()) {
@@ -116,4 +118,11 @@ public class StatisticsController {
         this.flashcardPointsRepository = flashcardPointsRepository;
     }
 
+    public CategoryRepository getCategoryRepository() {
+        return categoryRepository;
+    }
+
+    public void setCategoryRepository(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 }

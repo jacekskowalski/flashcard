@@ -26,8 +26,8 @@ import java.util.Objects;
 @CrossOrigin
 @RestController
 public class IndexController {
-//@Value("${spring.sendgrid.api-key}")
-private String apiKey="";
+@Value("${spring.sendgrid.api-key}")
+private String apiKey;
     Appuser appuser;
     @Autowired
     private AppuserRepository appuserRepository;
@@ -81,7 +81,7 @@ private String apiKey="";
         String subject = "Flashcards";
         Email to = new Email(getpswd.getEmail());
         Content content = new Content("text/html", "<p>Kliknij w link, aby zresetować hasło</p>" +
-                "<a href='http://localhost:3000/reset'>Reset</a>" );
+                "<a href='http://localhost:3000/'>Reset</a>" );
         Mail mail = new Mail(from, subject, to, content);
         SendGrid sg = new SendGrid(apiKey);
         Request request = new Request();

@@ -12,7 +12,7 @@ public class Results implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
   private  Long id;
     @ManyToOne
-    @JoinColumn(name = "apuserId")
+    @JoinColumn(name = "apuser_id")
   private   Appuser appuser;
    private double totaltime;
      @ManyToOne
