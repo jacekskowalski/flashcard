@@ -21,9 +21,9 @@ public class Results implements Serializable {
     @ManyToOne
     @JoinColumn(name = "difficulty_id")
   private   Difficulty difficulty;
-@ManyToOne
-@JoinColumn(name = "flashcard_id")
-Flashcards flashcards;
+   @ManyToOne
+   @JoinColumn(name = "flashcard_id")
+   Flashcards flashcards;
     public Results() {
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 public interface AppuserAchievementRepository extends JpaRepository<AppuserAchievement, Long> {
     @Query("SELECT aa.achievement.name FROM AppuserAchievement aa WHERE aa.user.id = ?1")
     List<String> findAllByUser_id(Long id);
-    @Query("SELECT aa.user, aa.achievement FROM AppuserAchievement aa WHERE aa.user.id = ?1 AND aa.achievement.name = ?2")
+    @Query("SELECT new AppuserAchievement(aa.user, aa.achievement) FROM AppuserAchievement aa WHERE aa.user.id = ?1 AND aa.achievement.name = ?2")
     AppuserAchievement findByIds(Long userId, String achievementName);
     @Transactional
     @Modifying

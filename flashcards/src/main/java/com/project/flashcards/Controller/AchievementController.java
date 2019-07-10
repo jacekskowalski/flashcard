@@ -93,35 +93,35 @@ public class AchievementController {
         if (Objects.isNull(result))
             return new ResponseEntity<>(gson.toJson("Data not found"), responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
         else {
-            Appuser app= appuserRepository.findById(result.getApuserId()).get();
-            Difficulty diff= difficultyRepository.findByName(result.getDiificultyName());
-            Category cat= categoryRepository.findByName(result.getCategoryName());
+            Appuser app = appuserRepository.findById(result.getApuserId()).get();
+            Difficulty diff = difficultyRepository.findByName(result.getDifficultyName());
+            Category cat = categoryRepository.findByName(result.getCategoryName());
             Flashcards flashcards = flashcardRepository.findById(result.getFlashcardId()).get();
-            Results newresult = new Results(app, result.getTime(), cat, diff,flashcards);
+            Results newresult = new Results(app, result.getTime(), cat, diff, flashcards);
             resultRepository.save(newresult);
 
                 if(String.valueOf(result.getCategoryName()).equalsIgnoreCase("HTML5")){
-                    if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Początkujący")){
+                    if(String.valueOf(result.getDifficultyName()).equalsIgnoreCase("Początkujący")){
                         createAchievement(result.getApuserId(),"Hyperstart");
-                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Średniozaawansowany")){
+                    }else if(String.valueOf(result.getDifficultyName()).equalsIgnoreCase("Średniozaawansowany")){
                         createAchievement(result.getApuserId(),"Coraz lepiej");
-                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Zaawansowany")){
+                    }else if(String.valueOf(result.getDifficultyName()).equalsIgnoreCase("Zaawansowany")){
                         createAchievement(result.getApuserId(),"Mistrz znaczników");
                     }
                 }else if(String.valueOf(result.getCategoryName()).equalsIgnoreCase("CSS3")){
-                    if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Początkujący")){
+                    if(String.valueOf(result.getDifficultyName()).equalsIgnoreCase("Początkujący")){
                         createAchievement(result.getApuserId(),"Stylowy start");
-                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Średniozaawansowany")){
+                    }else if(String.valueOf(result.getDifficultyName()).equalsIgnoreCase("Średniozaawansowany")){
                         createAchievement(result.getApuserId(),"Oby tak dalej");
-                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Zaawansowany")){
+                    }else if(String.valueOf(result.getDifficultyName()).equalsIgnoreCase("Zaawansowany")){
                         createAchievement(result.getApuserId(),"Czarodziej");
                     }
                 }else if(String.valueOf(result.getCategoryName()).equalsIgnoreCase("JavaScript")){
-                    if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Początkujący")){
+                    if(String.valueOf(result.getDifficultyName()).equalsIgnoreCase("Początkujący")){
                         createAchievement(result.getApuserId(),"Skryptowy start");
-                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Średniozaawansowany")){
+                    }else if(String.valueOf(result.getDifficultyName()).equalsIgnoreCase("Średniozaawansowany")){
                         createAchievement(result.getApuserId(),"Nie przestawaj");
-                    }else if(String.valueOf(result.getDiificultyName()).equalsIgnoreCase("Zaawansowany")){
+                    }else if(String.valueOf(result.getDifficultyName()).equalsIgnoreCase("Zaawansowany")){
                         createAchievement(result.getApuserId(),"Świat jest twój");
                     }
                 }

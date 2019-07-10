@@ -8,17 +8,17 @@ public class ResultHelperComponent {
    private Long apuserId;
    private double time;
    private String categoryName;
-   private String diificultyName;
+   private String difficultyName;
    private Long flashcardId;
 
     public ResultHelperComponent() {
     }
 
-    public ResultHelperComponent(Long apuserId, double time, String categoryName, String diificultyName, Long flashcardId) {
+    public ResultHelperComponent(Long apuserId, double time, String categoryName, String difficultyName, Long flashcardId) {
         this.apuserId = apuserId;
         this.time = time;
         this.categoryName = categoryName;
-        this.diificultyName = diificultyName;
+        this.difficultyName = difficultyName;
         this.flashcardId = flashcardId;
     }
 
@@ -54,13 +54,11 @@ public class ResultHelperComponent {
         this.categoryName = categoryName;
     }
 
-    public String getDiificultyName() {
-        return diificultyName;
+    public String getDifficultyName() {
+        return difficultyName;
     }
 
-    public void setDiificultyName(String diificultyName) {
-        this.diificultyName = diificultyName;
+    public void setDifficultyName(String difficultyName) {
+        this.difficultyName = difficultyName;
     }
-
-
 }
