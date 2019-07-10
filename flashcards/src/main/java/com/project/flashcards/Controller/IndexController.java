@@ -15,12 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 //implements   AuthenticationProvider
 @CrossOrigin
@@ -77,11 +77,13 @@ private String apiKey;
     if(Objects.isNull(getpswd)){
         return new ResponseEntity<>(gson.toJson("Account not found"), responseHeaders,HttpStatus.NOT_FOUND);
     }else {
+        String getTempPassword = generatePassword();
+        appuserRepository.changeUserPassword(email.get("email"),
+        BCrypt.hashpw(getTempPassword, BCrypt.gensalt(12)));
         Email from = new Email("flashcards@no-reply.com");
         String subject = "Flashcards";
         Email to = new Email(getpswd.getEmail());
-        Content content = new Content("text/html", "<p>Kliknij w link, aby zresetować hasło</p>" +
-                "<a href='http://localhost:3000/'>Reset</a>" );
+        Content content = new Content("text/html", "<p>Twoje tymczasowe hasło</p>" + getTempPassword);
         Mail mail = new Mail(from, subject, to, content);
         SendGrid sg = new SendGrid(apiKey);
         Request request = new Request();
@@ -90,10 +92,7 @@ private String apiKey;
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
             Response response = sg.api(request);
-            System.out.println(response.getStatusCode());
-            System.out.println(response.getBody());
-            System.out.println(response.getHeaders());
-        } catch (IOException ex) {
+              } catch (IOException ex) {
             throw ex;
         }
     }
@@ -120,12 +119,12 @@ private String apiKey;
            }
 
 
-    @PutMapping("/reset")
-    @ApiOperation(value = "Requires email, pswd")
-    public ResponseEntity<?> changePassword(@RequestBody Appuser appuser_email){
-    HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        if(Objects.isNull(appuser_email))
+         @PutMapping("/reset")
+         @ApiOperation(value = "Requires email, pswd")
+         public ResponseEntity<?> changePassword(@RequestBody Appuser appuser_email){
+         HttpHeaders responseHeaders = new HttpHeaders();
+         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+         if(Objects.isNull(appuser_email))
             return new ResponseEntity<>(gson.toJson("No content"),responseHeaders, HttpStatus.NO_CONTENT);
 
          else if(! appuserRepository.existsByEmail(appuser_email.getEmail())){
@@ -165,5 +164,18 @@ public void newappuser(String email) {
 
     public void setAppuser(Appuser appuser) {
         this.appuser = appuser;
+    }
+
+    public static String generatePassword() {
+        char[] pswdChars={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+                'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+                '0','1','2','3','4','5','6','7','8','9','!','@','#','$','%','+','-','='};
+        StringBuilder createString = new StringBuilder();
+        for( int i=0 ;i <10;i++){
+            Random rand = new Random();
+            int rn = rand.nextInt(pswdChars.length);
+            createString.append(pswdChars[rn]);
+        }
+        return  createString.toString();
     }
   }

@@ -148,7 +148,7 @@ private TimeStatsRepository timeStatsRepository;
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        if (id == 0 || id == null) {
+        if (id == 0 || !appuserRepository.existsById(id)) {
             return new ResponseEntity<>(gson.toJson("Account not found"), HttpStatus.UNPROCESSABLE_ENTITY);
         } else {
             favouriteFlashcardsRepository.deleteByUser_id(id);
