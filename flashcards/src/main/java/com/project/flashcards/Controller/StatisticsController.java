@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,9 +34,9 @@ public class StatisticsController {
     private CategoryRepository categoryRepository;
     Gson gson = new Gson();
 
-    @GetMapping("/statistics")
+    @GetMapping("/statistics/{id}")
     @ApiOperation(value = "Returns time of completed courses and nr of discoverd flashcards")
-    public ResponseEntity<?> getStatForUser(@RequestParam Long id) {
+    public ResponseEntity<?> getStatForUser(@PathVariable("id") Long id) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
         List<LinkedHashMap<String, String>> lista = new ArrayList<>();
