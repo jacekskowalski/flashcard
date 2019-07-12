@@ -50,9 +50,9 @@ public class StatisticsController {
             Double timeForJSCouse = resultRepository.getTimeForCompletedCourse(id, 3L);
             int coursesCompleted = resultRepository.countResultsByAppuserId(id).intValue();
             Long countAllDiscovered = flashcardPointsRepository.countByAppuserAndDiscovered(id, "yes");
-            Long countDiscoveredHtml = flashcardPointsRepository.countByDiscoveredAndCategory("yes", 1L);
-            Long countDiscoveredCss = flashcardPointsRepository.countByDiscoveredAndCategory("yes", 2L);
-            Long countDiscoveredJs = flashcardPointsRepository.countByDiscoveredAndCategory("yes", 3L);
+            Long countDiscoveredHtml = flashcardPointsRepository.countByDiscoveredAndCategory(id,"yes", 1L);
+            Long countDiscoveredCss = flashcardPointsRepository.countByDiscoveredAndCategory(id,"yes", 2L);
+            Long countDiscoveredJs = flashcardPointsRepository.countByDiscoveredAndCategory(id,"yes", 3L);
             temp.put("nr of all discovered flashcards", String.valueOf(countAllDiscovered));
             temp.put("nr of html discovered flashcards", String.valueOf(countDiscoveredHtml));
             temp.put("nr of css discovered flashcards", String.valueOf(countDiscoveredCss));
