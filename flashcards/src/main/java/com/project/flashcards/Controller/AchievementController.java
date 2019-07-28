@@ -36,6 +36,8 @@ public class AchievementController {
     private FlashcardRepository flashcardRepository;
     @Autowired
     private ResultRepository resultRepository;
+    @Autowired
+    private Flashcard_pointsRepository flashcardPointsRepository;
 
     public StatisticsRepository getStatisticsRepository() {
         return statisticsRepository;
@@ -80,7 +82,6 @@ public class AchievementController {
     @GetMapping("/achievement/{id}")
     @ApiOperation(value = "Returns all user achievements")
         public List<String> getAllAchievements(@PathVariable("id") Long id){
-
                return appuserAchievementRepository.findAllByUser_id(id);
     }
 
@@ -99,6 +100,12 @@ public class AchievementController {
             Flashcards flashcards = flashcardRepository.findById(result.getFlashcardId()).get();
             Results newresult = new Results(app, result.getTime(), cat, diff, flashcards);
             resultRepository.save(newresult);
+            flashcardPointsRepository.updateFlashcardPoints(result.getApuserId(),
+                    result.getFlashcardId());
+            int  userPoint = flashcardPointsRepository.calculateUserPoints(result.getApuserId(),
+                    cat.getId(), diff.getId()).intValue();
+            statisticsRepository.updateStatistics(userPoint, result.getApuserId(), cat.getId(), diff.getId());
+            checkIfAchievementMarathonRunnerExist(result.getApuserId(),result.getTime(),userPoint,cat.getId(),diff.getId());
 
                 if(String.valueOf(result.getCategoryName()).equalsIgnoreCase("HTML5")){
                     if(String.valueOf(result.getDifficultyName()).equalsIgnoreCase("Początkujący")){
@@ -137,6 +144,15 @@ public class AchievementController {
             AppuserAchievement appuserAchievement= new AppuserAchievement(newappuser, achievement);
             appuserAchievementRepository.save(appuserAchievement);
         }
+    }
+
+    public boolean checkIfAchievementMarathonRunnerExist(Long id, double time,int userPoints, Long catId, Long diffId){
+        int total = flashcardRepository.countAllByCategoryAndDiffiulty(catId,diffId);
+        if((time <= 300d) && (userPoints == total)){
+            createAchievement(id, "Maratończyk");
+            return true;
+        }
+        return false;
     }
 
       public DifficultyRepository getDifficultyRepository() {

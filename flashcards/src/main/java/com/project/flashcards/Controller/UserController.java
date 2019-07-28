@@ -32,8 +32,8 @@ public class UserController {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private AppuserAchievementRepository appuserAchievementRepository;
-@Autowired
-private TimeStatsRepository timeStatsRepository;
+    @Autowired
+    private TimeStatsRepository timeStatsRepository;
     @Autowired
     private FavouriteFlashcardsRepository favouriteFlashcardsRepository;
     @Autowired
